@@ -12,9 +12,9 @@ const AUTH_URL = "https://rentcar.stepprojects.ge/api";
 // ============================================================
 // THEME TOGGLE
 // ============================================================
-const themeBtn  = document.getElementById("themeToggleBtn");
+const themeBtn = document.getElementById("themeToggleBtn");
 const themeIcon = document.getElementById("themeIcon");
-const htmlEl    = document.documentElement;
+const htmlEl = document.documentElement;
 
 const savedTheme = localStorage.getItem("theme") || "light";
 htmlEl.setAttribute("data-theme", savedTheme);
@@ -22,7 +22,7 @@ themeIcon.textContent = savedTheme === "dark" ? "☀️" : "🌙";
 
 themeBtn.addEventListener("click", () => {
   const current = htmlEl.getAttribute("data-theme");
-  const next    = current === "dark" ? "light" : "dark";
+  const next = current === "dark" ? "light" : "dark";
   htmlEl.setAttribute("data-theme", next);
   themeIcon.textContent = next === "dark" ? "☀️" : "🌙";
   localStorage.setItem("theme", next);
@@ -45,14 +45,14 @@ document.querySelectorAll(".mob-link").forEach((link) => {
 // ============================================================
 // AUTH MODAL
 // ============================================================
-const authModal    = document.getElementById("authModal");
+const authModal = document.getElementById("authModal");
 const closeModalBtn = document.getElementById("closeModalBtn");
-const openLoginBtn  = document.getElementById("openLoginBtn");
-const openRegBtn    = document.getElementById("openRegisterBtn");
-const tabLogin      = document.getElementById("tabLogin");
-const tabRegister   = document.getElementById("tabRegister");
-const loginForm     = document.getElementById("loginForm");
-const registerForm  = document.getElementById("registerForm");
+const openLoginBtn = document.getElementById("openLoginBtn");
+const openRegBtn = document.getElementById("openRegisterBtn");
+const tabLogin = document.getElementById("tabLogin");
+const tabRegister = document.getElementById("tabRegister");
+const loginForm = document.getElementById("loginForm");
+const registerForm = document.getElementById("registerForm");
 
 function openModal(tab = "login") {
   authModal.classList.remove("hidden");
@@ -80,9 +80,9 @@ function showTab(tab) {
 }
 
 openLoginBtn.addEventListener("click", () => openModal("login"));
-openRegBtn.addEventListener("click",   () => openModal("register"));
+openRegBtn.addEventListener("click", () => openModal("register"));
 closeModalBtn.addEventListener("click", closeModal);
-tabLogin.addEventListener("click",    () => showTab("login"));
+tabLogin.addEventListener("click", () => showTab("login"));
 tabRegister.addEventListener("click", () => showTab("register"));
 
 authModal.addEventListener("click", (e) => {
@@ -93,25 +93,41 @@ authModal.addEventListener("click", (e) => {
 // AUTH STATE
 // ============================================================
 const guestBtns = document.getElementById("guestBtns");
-const userInfo  = document.getElementById("userInfo");
+const userInfo = document.getElementById("userInfo");
 const welcomeMsg = document.getElementById("welcomeMsg");
-const logoutBtn  = document.getElementById("logoutBtn");
+const logoutBtn = document.getElementById("logoutBtn");
 
 function checkAuthState() {
   const token = localStorage.getItem("authToken");
-  const name  = localStorage.getItem("userName");
+  const name = localStorage.getItem("userName");
 
+  // Desktop header
   if (token) {
-    userInfo.style.display  = "flex";
+    userInfo.style.display = "flex";
     userInfo.classList.remove("hidden");
     guestBtns.style.display = "none";
     guestBtns.classList.add("hidden");
-    welcomeMsg.textContent  = name || "მომხმარებელი";
+    welcomeMsg.textContent = name || "მომხმარებელი";
   } else {
-    userInfo.style.display  = "none";
+    userInfo.style.display = "none";
     userInfo.classList.add("hidden");
     guestBtns.style.display = "flex";
     guestBtns.classList.remove("hidden");
+  }
+
+  // Mobile nav auth
+  const mobGuest = document.getElementById("mobGuestBtns");
+  const mobUser = document.getElementById("mobUserInfo");
+  const mobWelcome = document.getElementById("mobWelcomeMsg");
+  if (mobGuest && mobUser) {
+    if (token) {
+      mobGuest.classList.add("hidden");
+      mobUser.classList.remove("hidden");
+      if (mobWelcome) mobWelcome.textContent = "👤 " + (name || "მომხმარებელი");
+    } else {
+      mobGuest.classList.remove("hidden");
+      mobUser.classList.add("hidden");
+    }
   }
 }
 
@@ -123,93 +139,119 @@ logoutBtn.addEventListener("click", () => {
   checkAuthState();
 });
 
+// Mobile auth button listeners
+const openLoginBtn2 = document.getElementById("openLoginBtn2");
+const openRegBtn2 = document.getElementById("openRegisterBtn2");
+const mobLogoutBtn = document.getElementById("mobLogoutBtn");
+
+if (openLoginBtn2)
+  openLoginBtn2.addEventListener("click", () => {
+    mobileNav.classList.remove("open");
+    openModal("login");
+  });
+if (openRegBtn2)
+  openRegBtn2.addEventListener("click", () => {
+    mobileNav.classList.remove("open");
+    openModal("register");
+  });
+if (mobLogoutBtn)
+  mobLogoutBtn.addEventListener("click", () => {
+    localStorage.removeItem("authToken");
+    localStorage.removeItem("userName");
+    checkAuthState();
+  });
+
 // ============================================================
 // REGISTER - POST /api/Users/register
 // ============================================================
-document.getElementById("registerSubmitBtn").addEventListener("click", async () => {
-  const msgEl    = document.getElementById("registerMsg");
-  const firstName = document.getElementById("reg-name").value.trim();
-  const lastName  = document.getElementById("reg-surname").value.trim();
-  const email     = document.getElementById("reg-email").value.trim();
-  const password  = document.getElementById("reg-password").value.trim();
+document
+  .getElementById("registerSubmitBtn")
+  .addEventListener("click", async () => {
+    const msgEl = document.getElementById("registerMsg");
+    const firstName = document.getElementById("reg-name").value.trim();
+    const lastName = document.getElementById("reg-surname").value.trim();
+    const email = document.getElementById("reg-email").value.trim();
+    const password = document.getElementById("reg-password").value.trim();
 
-  if (!firstName || !lastName || !email || !password) {
-    showMsg(msgEl, "ყველა ველი შეავსეთ", "error");
-    return;
-  }
-  if (password.length < 6) {
-    showMsg(msgEl, "პაროლი მინ. 6 სიმბოლო", "error");
-    return;
-  }
-
-  try {
-    const resp = await fetch(`${AUTH_URL}/Users/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        email,
-        password,
-        phoneNumber: "",
-        role: "User",
-      }),
-    });
-    const text = await resp.text();
-    if (resp.ok) {
-      showMsg(msgEl, "რეგისტრაცია წარმატებულია! შედით ანგარიშში.", "success");
-      setTimeout(() => showTab("login"), 1500);
-    } else {
-      showMsg(msgEl, text || "შეცდომა, სცადეთ თავიდან", "error");
+    if (!firstName || !lastName || !email || !password) {
+      showMsg(msgEl, "ყველა ველი შეავსეთ", "error");
+      return;
     }
-  } catch (err) {
-    showMsg(msgEl, `კავშირის შეცდომა: ${err.message}`, "error");
-  }
-});
+    if (password.length < 6) {
+      showMsg(msgEl, "პაროლი მინ. 6 სიმბოლო", "error");
+      return;
+    }
+
+    try {
+      const resp = await fetch(`${AUTH_URL}/Users/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          password,
+          phoneNumber: "",
+          role: "User",
+        }),
+      });
+      const text = await resp.text();
+      if (resp.ok) {
+        showMsg(msgEl, "რეგისტრაცია წარმატებულია! შედით ანგარიშში.", "success");
+        setTimeout(() => showTab("login"), 1500);
+      } else {
+        showMsg(msgEl, text || "შეცდომა, სცადეთ თავიდან", "error");
+      }
+    } catch (err) {
+      showMsg(msgEl, `კავშირის შეცდომა: ${err.message}`, "error");
+    }
+  });
 
 // ============================================================
 // LOGIN - POST /api/Users/login
 // ============================================================
-document.getElementById("loginSubmitBtn").addEventListener("click", async () => {
-  const msgEl   = document.getElementById("loginMsg");
-  const email   = document.getElementById("login-email").value.trim();
-  const password = document.getElementById("login-password").value.trim();
+document
+  .getElementById("loginSubmitBtn")
+  .addEventListener("click", async () => {
+    const msgEl = document.getElementById("loginMsg");
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value.trim();
 
-  if (!email || !password) {
-    showMsg(msgEl, "ელ-ფოსტა და პაროლი შეავსეთ", "error");
-    return;
-  }
-
-  try {
-    const resp = await fetch(`${AUTH_URL}/Users/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email,
-        password,
-        phoneNumber: "",
-        firstName: "",
-        lastName: "",
-        role: "",
-      }),
-    });
-    const data = await resp.json();
-
-    if (resp.ok) {
-      localStorage.setItem("authToken", data.token);
-      localStorage.setItem("userName", data.firstName || email.split("@")[0]);
-      showMsg(msgEl, "წარმატებით შეხვედით!", "success");
-      setTimeout(() => {
-        closeModal();
-        checkAuthState();
-      }, 1000);
-    } else {
-      showMsg(msgEl, data.message || "არასწორი ელ-ფოსტა ან პაროლი", "error");
+    if (!email || !password) {
+      showMsg(msgEl, "ელ-ფოსტა და პაროლი შეავსეთ", "error");
+      return;
     }
-  } catch (err) {
-    showMsg(msgEl, `კავშირის შეცდომა: ${err.message}`, "error");
-  }
-});
+
+    try {
+      const resp = await fetch(`${AUTH_URL}/Users/login`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          password,
+          phoneNumber: "",
+          firstName: "",
+          lastName: "",
+          role: "",
+        }),
+      });
+      const data = await resp.json();
+
+      if (resp.ok) {
+        localStorage.setItem("authToken", data.token);
+        localStorage.setItem("userName", data.firstName || email.split("@")[0]);
+        showMsg(msgEl, "წარმატებით შეხვედით!", "success");
+        setTimeout(() => {
+          closeModal();
+          checkAuthState();
+        }, 1000);
+      } else {
+        showMsg(msgEl, data.message || "არასწორი ელ-ფოსტა ან პაროლი", "error");
+      }
+    } catch (err) {
+      showMsg(msgEl, `კავშირის შეცდომა: ${err.message}`, "error");
+    }
+  });
 
 // ============================================================
 // STATIONS - GET /api/stations
@@ -248,7 +290,7 @@ async function getStations() {
 getStations();
 
 // სადგურების ძებნა - input + ღილაკი
-const stationInput    = document.getElementById("stationFilter");
+const stationInput = document.getElementById("stationFilter");
 const stationDropdown = document.getElementById("stationDropdown");
 
 async function searchStations() {
@@ -263,9 +305,7 @@ async function searchStations() {
   try {
     const resp = await fetch(`${BASE_URL}/stations`);
     const data = await resp.json();
-    const filtered = data.filter((s) =>
-      s.name.toLowerCase().includes(kw)
-    );
+    const filtered = data.filter((s) => s.name.toLowerCase().includes(kw));
 
     stationDropdown.innerHTML = "";
 
@@ -293,7 +333,9 @@ async function searchStations() {
 }
 
 stationInput.addEventListener("input", searchStations);
-document.getElementById("stationSearchBtn").addEventListener("click", searchStations);
+document
+  .getElementById("stationSearchBtn")
+  .addEventListener("click", searchStations);
 
 // ============================================================
 // DEPARTURES - GET /api/departures
@@ -344,7 +386,7 @@ async function getDepartures() {
 getDepartures();
 
 // გამგზავრებების ძებნა - input + ღილაკი
-const depInput    = document.getElementById("departureFilter");
+const depInput = document.getElementById("departureFilter");
 const depDropdown = document.getElementById("departureDropdown");
 
 async function searchDepartures() {
@@ -359,9 +401,10 @@ async function searchDepartures() {
   try {
     const resp = await fetch(`${BASE_URL}/departures`);
     const data = await resp.json();
-    const filtered = data.filter((d) =>
-      d.destination.toLowerCase().includes(kw) ||
-      d.source.toLowerCase().includes(kw)
+    const filtered = data.filter(
+      (d) =>
+        d.destination.toLowerCase().includes(kw) ||
+        d.source.toLowerCase().includes(kw),
     );
 
     depDropdown.innerHTML = "";
@@ -390,7 +433,9 @@ async function searchDepartures() {
 }
 
 depInput.addEventListener("input", searchDepartures);
-document.getElementById("filterDepartureBtn").addEventListener("click", searchDepartures);
+document
+  .getElementById("filterDepartureBtn")
+  .addEventListener("click", searchDepartures);
 
 // ============================================================
 // TICKETS - GET /api/tickets
@@ -445,7 +490,7 @@ async function getTickets() {
 getTickets();
 
 // ბილეთების ძებნა ელ-ფოსტით
-const ticketInput    = document.getElementById("ticketFilter");
+const ticketInput = document.getElementById("ticketFilter");
 const ticketDropdown = document.getElementById("ticketsDropdown");
 
 async function searchTickets() {
@@ -488,7 +533,9 @@ async function searchTickets() {
 }
 
 ticketInput.addEventListener("input", searchTickets);
-document.getElementById("ticketSearchBtn").addEventListener("click", searchTickets);
+document
+  .getElementById("ticketSearchBtn")
+  .addEventListener("click", searchTickets);
 
 // dropdown-ის დახურვა გარეთ კლიკზე
 document.addEventListener("click", (e) => {
@@ -504,7 +551,7 @@ document.addEventListener("click", (e) => {
 // ============================================================
 function showMsg(el, text, type) {
   el.textContent = text;
-  el.className   = `auth-msg ${type}`;
+  el.className = `auth-msg ${type}`;
   el.style.display = "block";
   setTimeout(() => {
     el.style.display = "none";

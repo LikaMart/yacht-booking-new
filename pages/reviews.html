@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>რევიუები | Yacht Booking</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Georgian:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../styles/style.css" />
+    <link rel="icon" type="image/png" href="../assets/icons/ship.png" />
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <a href="../index.html" class="logo">
+          <img src="../assets/icons/ship.png" alt="Logo" class="logo-icon" />
+          <span>yacht booking</span>
+        </a>
+        <nav id="mainNav">
+          <a href="../index.html"
+            ><img src="../assets/icons/home.png" alt="" />მთავარი</a
+          >
+          <a href="booking.html"
+            ><img src="../assets/icons/cart.png" alt="" />დაჯავშნა</a
+          >
+          <a href="gallery.html"
+            ><img src="../assets/icons/calendar-solid.png" alt="" />გალერეა</a
+          >
+          <a href="reviews.html"
+            ><img src="../assets/icons/user-solid.png" alt="" />რევიუები</a
+          >
+
+          <a href="cart.html"
+            ><img src="../assets/icons/cart.png" alt="" />კალათა</a
+          >
+        </nav>
+        <div class="header-actions">
+          <button id="themeToggleBtn" class="icon-btn" title="თემის შეცვლა">
+            <span id="themeIcon">🌙</span>
+          </button>
+          <div id="userInfo" class="hidden">
+            <span id="welcomeMsg" class="welcome-text"></span>
+            <button class="btn-outline small" id="logoutBtn">გასვლა</button>
+          </div>
+          <div id="guestBtns">
+            <a href="login.html" class="btn-outline">
+              <img
+                src="../assets/icons/user-solid.png"
+                alt=""
+                class="btn-icon"
+              />
+              შესვლა
+            </a>
+          </div>
+          <button class="burger" id="burgerBtn" aria-label="მენიუ">
+            <img
+              src="../assets/icons/bars-solid.png"
+              alt="menu"
+              class="burger-icon"
+            />
+          </button>
+        </div>
+      </div>
+      <div class="mobile-nav" id="mobileNav">
+        <a href="../index.html" class="mob-link"
+          ><img src="../assets/icons/home.png" alt="" />მთავარი</a
+        >
+        <a href="../index.html#stations" class="mob-link"
+          ><img
+            src="../assets/icons/location-dot-solid.png"
+            alt=""
+          />სადგურები</a
+        >
+        <a href="../index.html#departures" class="mob-link"
+          ><img
+            src="../assets/icons/calendar-solid.png"
+            alt=""
+          />გამგზავრებები</a
+        >
+        <a href="booking.html" class="mob-link"
+          ><img src="../assets/icons/cart.png" alt="" />დაჯავშნა</a
+        >
+        <a href="gallery.html" class="mob-link"
+          ><img src="../assets/icons/calendar-solid.png" alt="" />გალერეა</a
+        >
+        <a href="reviews.html" class="mob-link"
+          ><img src="../assets/icons/user-solid.png" alt="" />რევიუები</a
+        >
+
+        <a href="cart.html" class="mob-link"
+          ><img src="../assets/icons/cart.png" alt="" />კალათა</a
+        >
+        <a href="login.html" class="mob-link"
+          ><img src="../assets/icons/user-solid.png" alt="" />შესვლა</a
+        >
+      </div>
+    </header>
+
+    <main class="reviews-page">
+      <div class="section-inner">
+        <h1 class="page-title">მგზავრების რევიუები</h1>
+
+        <!-- სტატიკური რევიუები -->
+        <div class="reviews-grid" id="reviewsGrid">
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">გ</div>
+              <div>
+                <p class="review-name">გიორგი ბაგრატიონი</p>
+                <p class="review-date">15 მარტი, 2026</p>
+              </div>
+              <div class="review-stars">★★★★★</div>
+            </div>
+            <p class="review-text">
+              ძალიან კარგი სერვისი, ბილეთი სწრაფად დაჯავშნა და იახტა დროულად
+              გავიდა. ნამდვილად გირჩევ!
+            </p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">ნ</div>
+              <div>
+                <p class="review-name">ნინო კვარაცხელია</p>
+                <p class="review-date">10 მარტი, 2026</p>
+              </div>
+              <div class="review-stars">★★★★☆</div>
+            </div>
+            <p class="review-text">
+              საიტი მოსახერხებელია, ადვილად ავირჩიე ადგილი. ერთადერთი —
+              ბათუმი-თბილისის მარშრუტზე ბევრი მგზავრია.
+            </p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">ლ</div>
+              <div>
+                <p class="review-name">ლევან მიქელაძე</p>
+                <p class="review-date">5 მარტი, 2026</p>
+              </div>
+              <div class="review-stars">★★★★★</div>
+            </div>
+            <p class="review-text">
+              პირველად ვსარგებლობდი ამ სერვისით, ყველაფერი ზედმიწევნით
+              გამართულად მუშაობდა. ვახდენ ბრუნდი!
+            </p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">ა</div>
+              <div>
+                <p class="review-name">ანა გელაშვილი</p>
+                <p class="review-date">1 მარტი, 2026</p>
+              </div>
+              <div class="review-stars">★★★★★</div>
+            </div>
+            <p class="review-text">
+              ფასები გონივრულია, ადგილის არჩევა მარტივია. ონლაინ დაჯავშნა ბევრად
+              უკეთესია ვიდრე რიგში დგომა.
+            </p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">დ</div>
+              <div>
+                <p class="review-name">დავით ჩხეიძე</p>
+                <p class="review-date">25 თებერვალი, 2026</p>
+              </div>
+              <div class="review-stars">★★★☆☆</div>
+            </div>
+            <p class="review-text">
+              სერვისი კარგია, მაგრამ ფოთის მარშრუტზე ნაკლები იახტაა. მეტი რეისი
+              გამოიყენეთ!
+            </p>
+          </div>
+
+          <div class="review-card">
+            <div class="review-header">
+              <div class="review-avatar">მ</div>
+              <div>
+                <p class="review-name">მარიამ ბერიძე</p>
+                <p class="review-date">20 თებერვალი, 2026</p>
+              </div>
+              <div class="review-stars">★★★★★</div>
+            </div>
+            <p class="review-text">
+              საიტი ლამაზია და მოსახერხებელი. ბილეთი 2 წუთში დავჯავშნე. ბიზნეს
+              კლასი ნამდვილად ღირს!
+            </p>
+          </div>
+        </div>
+
+        <!-- რევიუს დამატება -->
+        <div class="form-card review-form-card">
+          <h3 class="sub-title">შენი რევიუ</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="r-name">სახელი</label>
+              <input type="text" id="r-name" placeholder="გიორგი" />
+            </div>
+            <div class="form-group">
+              <label for="r-rating">შეფასება</label>
+              <select id="r-rating">
+                <option value="5">★★★★★ — შესანიშნავი</option>
+                <option value="4">★★★★☆ — კარგი</option>
+                <option value="3">★★★☆☆ — საშუალო</option>
+                <option value="2">★★☆☆☆ — ცუდი</option>
+                <option value="1">★☆☆☆☆ — ძალიან ცუდი</option>
+              </select>
+            </div>
+            <div class="form-group form-group-full">
+              <label for="r-text">კომენტარი</label>
+              <textarea
+                id="r-text"
+                placeholder="შენი გამოცდილება..."
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+          <button id="addReviewBtn" class="btn-main">დამატება</button>
+          <div id="reviewMsg" class="auth-msg hidden"></div>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-col">
+          <div class="logo footer-logo-wrap">
+            <img
+              src="../assets/icons/ship.png"
+              alt=""
+              class="logo-icon footer-logo"
+            />
+            <span>yacht booking</span>
+          </div>
+          <p class="footer-desc">
+            სამგზავრო ბილეთები საქართველოს ყველა მიმართულებით.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">ნავიგაცია</h4>
+          <ul class="footer-links">
+            <li><a href="../index.html">მთავარი</a></li>
+            <li><a href="booking.html">დაჯავშნა</a></li>
+            <li><a href="reviews.html">რევიუები</a></li>
+            <li><a href="login.html">შესვლა</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">კონტაქტი</h4>
+          <p class="footer-contact">ბათუმი, რუსთაველის ქ. 12</p>
+          <p class="footer-contact">+995 577 00 11 22</p>
+          <p class="footer-contact">
+            <a
+              href="/cdn-cgi/l/email-protection"
+              class="__cf_email__"
+              data-cfemail="11787f777e516870727965737e7e7a787f763f7674"
+              >[email&#160;protected]</a
+            >
+          </p>
+          <div class="footer-social">
+            <a href="#"
+              ><img
+                src="../assets/icons/instagram-brands-solid.png"
+                alt="instagram"
+            /></a>
+            <a href="#"
+              ><img
+                src="../assets/icons/facebook-brands-solid.png"
+                alt="facebook"
+            /></a>
+            <a href="#"><img src="../assets/icons/phone.png" alt="phone" /></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">მდებარეობა</h4>
+          <div class="footer-map">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2990.123456789!2d41.6168!3d41.6427!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4057585f2b5c7c3f%3A0x1234567890abcdef!2z4YOT4YOU4YOQ4YOb4YOj4YOX4YOk4YOQIOGDpeGDlOGDmuGDmA!5e0!3m2!1ska!2sge!4v1234567890"
+              width="100%"
+              height="160"
+              style="border: 0; border-radius: 0.5rem"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 yacht booking — შექმნილი შენი კომფორტისთვის</p>
+      </div>
+    </footer>
+
+    <script src="../scripts/reviews.js" type="module"></script>
+  </body>
+</html>

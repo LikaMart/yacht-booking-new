@@ -1,0 +1,1563 @@
+/* ============================================================
+   style.css — Yacht Booking
+   სტრუქტურა:
+   1. Variables & Themes
+   2. Reset & Base
+   3. Header & Nav
+   4. Burger Menu
+   5. Buttons
+   6. Auth Modal
+   7. Hero
+   8. Sections & Typography
+   9. Search & Dropdown
+   10. Cards
+   11. Forms
+   12. Login Page + localStorage Panel
+   13. Booking Page
+   14. Reviews Page
+   15. 404 Page
+   16. Footer
+   17. Calendar
+   18. Accordion
+   19. Responsive
+============================================================ */
+
+/* #region Variables & Themes */
+:root {
+  --navy:        #1a2744;
+  --blue:        #2563eb;
+  --blue-dark:   #1d4ed8;
+  --accent:      #f59e0b;
+  --red:         #ef4444;
+  --bg:          #f1f5f9;
+  --bg-alt:      #ffffff;
+  --card-bg:     #ffffff;
+  --text:        #1e293b;
+  --text-light:  #64748b;
+  --border:      #e2e8f0;
+  --shadow:      0 4px 16px rgba(0, 0, 0, 0.09);
+  --header-bg:   #1a2744;
+  --header-text: #ffffff;
+  --input-bg:    #ffffff;
+}
+
+[data-theme="dark"] {
+  --bg:          #0f172a;
+  --bg-alt:      #1e293b;
+  --card-bg:     #1e293b;
+  --text:        #e2e8f0;
+  --text-light:  #94a3b8;
+  --border:      #334155;
+  --shadow:      0 4px 16px rgba(0, 0, 0, 0.35);
+  --header-bg:   #0f172a;
+  --header-text: #e2e8f0;
+  --input-bg:    #1e293b;
+}
+/* #endregion */
+
+/* #region Reset & Base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: "Noto Sans Georgian", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 1rem;
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
+  overflow-x: hidden;
+  padding-top: 4rem; /* fixed header-ის სიმაღლე */
+}
+/* #endregion */
+
+/* #region Header & Nav */
+header {
+  background: var(--header-bg);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+  transition: background 0.3s;
+}
+
+.header-inner {
+  padding: 0.75rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+
+/* ლოგო */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.7rem;
+  color: var(--accent);
+  letter-spacing: 2px;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+.logo-icon {
+  width: 2rem;
+  height: 2rem;
+  filter: brightness(0) invert(1);
+}
+
+/* დესკტოპ ნავიგაცია — ცენტრში */
+nav#mainNav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+nav#mainNav a {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
+}
+
+nav#mainNav a img {
+  width: 14px;
+  height: 14px;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+}
+
+nav#mainNav a:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--accent);
+}
+
+nav#mainNav a:hover img {
+  opacity: 1;
+  filter: brightness(0) saturate(100%) invert(70%) sepia(80%) hue-rotate(0deg);
+}
+
+.active-link {
+  color: var(--accent) !important;
+}
+
+/* header-ის მარჯვენა ბლოკი */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* თემის ღილაკი */
+.icon-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 8px;
+  width: 2.2rem;
+  height: 2.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Auth ბლოკი */
+#guestBtns,
+#userInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+#userInfo.hidden,
+#guestBtns.hidden {
+  display: none !important;
+}
+
+.welcome-text {
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* მობილური მენიუ */
+.mobile-nav {
+  display: none;
+  flex-direction: column;
+  background: var(--header-bg);
+  padding: 0 1.5rem 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  transition: background 0.3s;
+}
+
+.mobile-nav.open {
+  display: flex;
+}
+
+.mob-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  padding: 0.65rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.mob-link:last-child {
+  border-bottom: none;
+}
+
+.mob-link:hover {
+  color: var(--accent);
+}
+
+.mob-link img {
+  width: 14px;
+  filter: brightness(0) invert(1);
+  opacity: 0.7;
+}
+/* #endregion */
+
+/* #region Burger Menu */
+.burger {
+  display: none;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 6px;
+  padding: 0.4rem;
+  cursor: pointer;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1001;
+}
+
+.burger-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+  filter: brightness(0) invert(1);
+  display: block;
+}
+/* #endregion */
+
+/* #region Buttons */
+.btn-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--blue);
+  color: white;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-family: "Noto Sans Georgian", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, transform 0.15s;
+}
+
+.btn-main:hover {
+  background: var(--blue-dark);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.9);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-family: "Noto Sans Georgian", sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.btn-outline.small {
+  padding: 0.35rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--accent);
+  color: var(--navy);
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-family: "Noto Sans Georgian", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.btn-secondary:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.btn-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: var(--red);
+  color: white;
+  padding: 0.6rem 1.4rem;
+  border-radius: 8px;
+  font-family: "Noto Sans Georgian", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.btn-danger:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.btn-search {
+  background: var(--blue);
+  border: none;
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.btn-search img {
+  width: 1rem;
+  height: 1rem;
+  filter: brightness(0) invert(1);
+}
+
+.btn-search:hover {
+  background: var(--blue-dark);
+}
+
+.btn-icon {
+  width: 14px;
+  height: 14px;
+  filter: brightness(0) invert(1);
+}
+
+.full-width {
+  width: 100%;
+  justify-content: center;
+}
+/* #endregion */
+
+/* #region Auth Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  backdrop-filter: blur(3px);
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal {
+  background: var(--card-bg);
+  border-radius: 16px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 420px;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s;
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.modal-close:hover {
+  opacity: 1;
+}
+
+.modal-close img {
+  width: 1rem;
+  height: 1rem;
+}
+
+.modal-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 0.6rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-light);
+  font-family: "Noto Sans Georgian", sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.tab-btn.active {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: rgba(37, 99, 235, 0.06);
+}
+
+.auth-form h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1.25rem;
+  color: var(--text);
+}
+/* #endregion */
+
+/* #region Hero */
+.hero {
+  background: linear-gradient(135deg, var(--navy) 0%, #2d3e6e 100%);
+  color: white;
+  text-align: center;
+  padding: 8rem 1.5rem 4rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-content {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.hero h1 {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  letter-spacing: 3px;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+}
+
+.accent {
+  color: var(--accent);
+}
+
+.hero p {
+  font-size: 1.1rem;
+  opacity: 0.8;
+  margin-bottom: 2rem;
+}
+
+/* ტალღები + გემი */
+.sea-track {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  overflow: hidden;
+}
+
+.waves-bg {
+  position: absolute;
+  bottom: 0;
+  width: 200%;
+  height: 40px;
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.08) 0px,
+    rgba(255, 255, 255, 0.08) 20px,
+    transparent 20px,
+    transparent 40px
+  );
+  animation: waveMove 4s linear infinite;
+}
+
+@keyframes waveMove {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ship-anim {
+  position: absolute;
+  bottom: 12px;
+  animation: shipSail 20s linear infinite;
+}
+
+.ship-img {
+  width: 2.5rem;
+  height: auto;
+  filter: brightness(0) invert(1);
+  animation: shipBob 2s ease-in-out infinite;
+}
+
+@keyframes shipSail {
+  from { left: -5rem; }
+  to   { left: 100%; }
+}
+
+@keyframes shipBob {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-4px); }
+}
+
+/* Hero stats */
+.hero-stats {
+  display: flex;
+  gap: 2rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 2rem;
+}
+
+.hero-stat {
+  text-align: center;
+}
+
+.hero-stat-num {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2rem;
+  letter-spacing: 2px;
+  color: var(--accent);
+  display: block;
+}
+
+.hero-stat-label {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.65);
+}
+/* #endregion */
+
+/* #region Sections & Typography */
+.section {
+  padding: 4rem 1.5rem;
+  transition: background 0.3s;
+}
+
+.alt-bg {
+  background: var(--bg-alt);
+}
+
+.section-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.2rem;
+  letter-spacing: 2px;
+  color: var(--navy);
+  margin-bottom: 1.5rem;
+  border-left: 5px solid var(--accent);
+  padding-left: 0.75rem;
+}
+
+[data-theme="dark"] .section-title {
+  color: var(--accent);
+}
+
+.title-icon {
+  width: 1.4rem;
+  height: 1.4rem;
+  filter: opacity(0.7);
+}
+
+[data-theme="dark"] .title-icon {
+  filter: brightness(0) invert(1) opacity(0.6);
+}
+/* #endregion */
+
+/* #region Search & Dropdown */
+.search-wrap {
+  position: relative;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.search-wrap input {
+  padding: 0.65rem 1rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-family: "Noto Sans Georgian", sans-serif;
+  font-size: 0.95rem;
+  width: 280px;
+  background: var(--input-bg);
+  color: var(--text);
+  outline: none;
+  transition: border 0.2s, background 0.3s;
+}
+
+.search-wrap input:focus {
+  border-color: var(--blue);
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  width: 280px;
+  max-height: 220px;
+  overflow-y: auto;
+  display: none;
+  transition: background 0.3s;
+}
+
+.dropdown p {
+  padding: 0.6rem 1rem;
+  margin: 0;
+  cursor: pointer;
+  font-size: 0.9rem;
+  color: var(--text);
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.dropdown p:last-child {
+  border-bottom: none;
+}
+
+.dropdown p:hover {
+  background: rgba(37, 99, 235, 0.08);
+  color: var(--blue);
+}
+/* #endregion */
+
+/* #region Cards */
+.products {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+  gap: 1.25rem;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 1.25rem 1.5rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+
+.card h3 {
+  color: var(--navy);
+  font-size: 1.05rem;
+  margin-bottom: 0.4rem;
+}
+
+[data-theme="dark"] .card h3 {
+  color: var(--accent);
+}
+
+.card h4 {
+  color: var(--blue);
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.card p {
+  color: var(--text-light);
+  font-size: 0.86rem;
+  margin-top: 0.25rem;
+}
+
+/* იახტის ქვე-ბარათი */
+.trainCard {
+  background: rgba(37, 99, 235, 0.05);
+  border-left: 4px solid var(--blue);
+  margin-left: 1rem;
+}
+
+[data-theme="dark"] .trainCard {
+  background: rgba(37, 99, 235, 0.1);
+}
+/* #endregion */
+
+/* #region Forms */
+.form-card {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 2rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+  transition: background 0.3s;
+}
+
+.sub-title {
+  color: var(--text);
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.form-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--text-light);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select,
+textarea {
+  padding: 0.6rem 0.9rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  font-family: "Noto Sans Georgian", sans-serif;
+  font-size: 0.95rem;
+  background: var(--input-bg);
+  color: var(--text);
+  outline: none;
+  transition: border 0.2s, background 0.3s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+textarea:focus {
+  border-color: var(--blue);
+}
+
+.form-group select {
+  cursor: pointer;
+  width: 100%;
+}
+
+.form-group select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+textarea {
+  resize: vertical;
+  width: 100%;
+}
+
+/* შეტყობინება */
+.auth-msg {
+  margin-top: 0.85rem;
+  padding: 0.65rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.auth-msg.success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+}
+
+.auth-msg.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.form-group-full {
+  grid-column: 1 / -1;
+}
+/* #endregion */
+
+/* #region Login Page & localStorage Panel */
+.auth-page {
+  min-height: calc(100vh - 9rem);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  padding: 3rem 1.5rem;
+}
+
+.auth-container {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  padding: 2.5rem;
+  width: 100%;
+  max-width: 28rem;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  transition: background 0.3s;
+}
+
+.auth-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 1.25rem;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 0.65rem;
+  border: 2px solid var(--border);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--text-light);
+  font-family: "Noto Sans Georgian", sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.auth-tab.active {
+  border-color: var(--blue);
+  color: var(--blue);
+  background: rgba(37, 99, 235, 0.06);
+}
+
+.auth-form-page h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  color: var(--text);
+}
+
+.auth-form-page .form-group {
+  margin-bottom: 0.85rem;
+}
+
+.auth-sub {
+  color: var(--text-light);
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.auth-switch {
+  text-align: center;
+  margin-top: 1.25rem;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.auth-switch a {
+  color: var(--blue);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-switch a:hover {
+  text-decoration: underline;
+}
+
+/* localStorage info panel */
+.token-info-wrap {
+  width: 100%;
+  max-width: 28rem;
+}
+
+.token-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow);
+  transition: background 0.3s;
+}
+
+.token-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-light);
+  margin-bottom: 0.75rem;
+}
+
+.token-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.84rem;
+}
+
+.token-row:last-child {
+  border-bottom: none;
+}
+
+.token-label {
+  font-weight: 700;
+  color: var(--text-light);
+  flex-shrink: 0;
+}
+
+.token-value {
+  color: var(--text);
+  word-break: break-all;
+  text-align: right;
+}
+
+.token-mono {
+  font-family: monospace;
+  font-size: 0.76rem;
+  color: var(--blue);
+}
+
+.token-status-in  { color: #059669; font-weight: 700; }
+.token-status-out { color: var(--text-light); }
+/* #endregion */
+
+/* #region Booking Page */
+.booking-page {
+  padding: 3rem 1.5rem;
+  min-height: calc(100vh - 9rem);
+}
+
+.page-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 2.5rem;
+  letter-spacing: 2px;
+  color: var(--navy);
+  margin-bottom: 2rem;
+  border-left: 0.3rem solid var(--accent);
+  padding-left: 0.75rem;
+}
+
+[data-theme="dark"] .page-title {
+  color: var(--accent);
+}
+/* #endregion */
+
+/* #region Reviews Page */
+.reviews-page {
+  padding: 3rem 1.5rem;
+}
+
+.reviews-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
+  gap: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.review-card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s, background 0.3s;
+}
+
+.review-card:hover {
+  transform: translateY(-0.25rem);
+}
+
+.review-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.review-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--accent);
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.review-name  { font-weight: 700; font-size: 0.9rem; color: var(--text); }
+.review-date  { font-size: 0.78rem; color: var(--text-light); }
+.review-stars { margin-left: auto; color: var(--accent); font-size: 0.85rem; white-space: nowrap; }
+.review-text  { font-size: 0.88rem; color: var(--text-light); line-height: 1.6; }
+.review-form-card { margin-top: 1rem; }
+/* #endregion */
+
+/* #region 404 Page */
+.not-found-page {
+  min-height: calc(100vh - 9rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+}
+
+.not-found-inner {
+  max-width: 30rem;
+}
+
+.not-found-num {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: clamp(5rem, 18vw, 9rem);
+  color: var(--accent);
+  line-height: 1;
+  letter-spacing: 4px;
+}
+
+.ship-lost {
+  margin: 1rem 0;
+  animation: shipBob 2s ease-in-out infinite;
+}
+
+.lost-ship-img {
+  width: 3.5rem;
+  filter: opacity(0.4);
+}
+
+.not-found-inner h2 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+}
+
+.not-found-inner p {
+  color: var(--text-light);
+  margin-bottom: 2rem;
+  font-size: 0.95rem;
+}
+/* #endregion */
+
+/* #region Footer */
+footer {
+  background: var(--header-bg);
+  transition: background 0.3s;
+}
+
+.footer-inner {
+  max-width: 75rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 2rem;
+}
+
+.footer-logo-wrap {
+  margin-bottom: 0.75rem;
+}
+
+.footer-logo {
+  width: 1.5rem !important;
+  height: 1.5rem !important;
+}
+
+.footer-desc {
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+.footer-heading {
+  color: var(--accent);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+
+.footer-links {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.footer-links a {
+  color: rgba(255, 255, 255, 0.6);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s;
+}
+
+.footer-links a:hover {
+  color: var(--accent);
+}
+
+.footer-contact {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.88rem;
+  margin-bottom: 0.3rem;
+}
+
+.footer-social {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.footer-social a img {
+  width: 1.2rem;
+  height: 1.2rem;
+  filter: brightness(0) invert(1);
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.footer-social a:hover img {
+  opacity: 1;
+}
+
+.footer-map iframe {
+  width: 100%;
+  height: 10rem;
+  border: 0;
+  border-radius: 0.5rem;
+}
+
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  text-align: center;
+  padding: 1rem 1.5rem;
+  color: rgba(255, 255, 255, 0.35);
+  font-size: 0.85rem;
+}
+/* #endregion */
+
+/* #region Calendar */
+.calendar-wrap {
+  display: none;
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  z-index: 60;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  padding: 1rem;
+  min-width: 17rem;
+  transition: background 0.3s;
+}
+
+.calendar-wrap.cal-open {
+  display: block;
+}
+
+.cal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.cal-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--text);
+}
+
+.cal-nav {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 0.4rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+.cal-nav:hover {
+  background: var(--border);
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.15rem;
+}
+
+.cal-day-name {
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-light);
+  padding: 0.25rem 0;
+}
+
+.cal-cell {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.82rem;
+  border-radius: 0.35rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text);
+  transition: background 0.15s;
+}
+
+.cal-cell:hover:not(:disabled):not(.past) {
+  background: rgba(37, 99, 235, 0.1);
+  color: var(--blue);
+}
+
+.cal-cell.today    { font-weight: 700; color: var(--blue); }
+.cal-cell.selected { background: var(--blue); color: white; font-weight: 700; }
+.cal-cell.past     { opacity: 0.3; cursor: not-allowed; }
+.cal-cell.empty    { cursor: default; }
+/* #endregion */
+
+/* #region Accordion */
+.accordion-section {
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  transition: background 0.3s;
+}
+
+.accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.accordion-header:hover {
+  background: rgba(37, 99, 235, 0.04);
+}
+
+.accordion-title {
+  font-family: "Bebas Neue", sans-serif;
+  font-size: 1.4rem;
+  letter-spacing: 2px;
+  color: var(--navy);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+[data-theme="dark"] .accordion-title {
+  color: var(--accent);
+}
+
+.accordion-title img {
+  width: 1.2rem;
+  height: 1.2rem;
+  opacity: 0.6;
+}
+
+[data-theme="dark"] .accordion-title img {
+  filter: brightness(0) invert(1);
+}
+
+.accordion-arrow {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  color: var(--text-light);
+  transition: transform 0.3s, background 0.2s;
+  flex-shrink: 0;
+}
+
+.accordion-section.open .accordion-arrow {
+  transform: rotate(180deg);
+  background: var(--blue);
+  color: white;
+}
+
+.accordion-body {
+  display: none;
+  padding: 0 1.5rem 1.5rem;
+  border-top: 1px solid var(--border);
+}
+
+.accordion-section.open .accordion-body {
+  display: block;
+}
+
+.accordion-body .search-wrap {
+  padding-top: 1rem;
+}
+/* #endregion */
+
+/* #region Responsive */
+
+/* Breakpoint 1 — ≤1100px: nav icon-ები იმალება, ტექსტი რჩება */
+@media (max-width: 68.75rem) {
+  nav#mainNav a img {
+    display: none;
+  }
+
+  nav#mainNav a {
+    padding: 0.4rem 0.5rem;
+    font-size: 0.82rem;
+  }
+}
+
+/* Breakpoint 2 — ≤768px: nav იმალება, burger ჩნდება */
+@media (max-width: 48rem) {
+  nav#mainNav {
+    display: none;
+  }
+
+  .burger {
+    display: flex;
+  }
+
+  .header-actions {
+    gap: 0.35rem;
+  }
+
+  /* auth ღილაკები ყოველთვის ჩანს */
+  #guestBtns,
+  #userInfo {
+    display: flex !important;
+  }
+
+  #userInfo.hidden,
+  #guestBtns.hidden {
+    display: none !important;
+  }
+
+  /* სახელი იმარტივება — გასვლა ღილაკი რჩება */
+  .welcome-text {
+    display: none;
+  }
+
+  .btn-outline.small {
+    padding: 0.35rem 0.6rem;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .section {
+    padding: 2.5rem 1rem;
+  }
+
+  .products {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .reviews-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .booking-page {
+    padding: 2rem 1rem;
+  }
+
+  .reviews-page {
+    padding: 2rem 1rem;
+  }
+
+  .auth-container {
+    padding: 1.5rem;
+  }
+
+  .hero {
+    padding: 3.5rem 1.5rem 3rem;
+  }
+
+  .search-wrap input {
+    width: 100%;
+  }
+
+  .dropdown {
+    width: 100%;
+  }
+
+  .modal {
+    padding: 1.5rem;
+  }
+}
+
+/* Breakpoint 3 — ≤480px: mobile layout */
+@media (max-width: 30rem) {
+  .header-inner {
+    padding: 0.6rem 1rem;
+  }
+
+  .logo span {
+    font-size: 1.3rem;
+  }
+
+  .btn-outline {
+    padding: 0.4rem 0.6rem;
+    font-size: 0.78rem;
+  }
+
+  /* icon იმარტივება — ტექსტი რჩება */
+  .btn-outline .btn-icon {
+    display: none;
+  }
+
+  .btn-main {
+    padding: 0.4rem 0.75rem;
+    font-size: 0.82rem;
+  }
+
+  .products {
+    grid-template-columns: 1fr;
+  }
+
+  .reviews-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .footer-inner {
+    grid-template-columns: 1fr;
+    padding: 1.5rem 1rem;
+  }
+
+  .section-title {
+    font-size: 1.7rem;
+  }
+
+  .form-card {
+    padding: 1.25rem;
+  }
+
+  .hero h1 {
+    font-size: 2.2rem;
+  }
+
+  .hero-stats {
+    gap: 1rem;
+  }
+
+  .auth-container {
+    padding: 1.25rem;
+  }
+
+  .page-title {
+    font-size: 1.8rem;
+  }
+
+  .not-found-num {
+    font-size: 5rem;
+  }
+}
+/* #endregion */

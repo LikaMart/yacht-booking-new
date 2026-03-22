@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Yacht Booking</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Georgian:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles/style.css" />
+    <link rel="icon" type="image/png" href="./assets/icons/ship.png" />
+    <style>
+      .accordion-section {
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        overflow: hidden;
+        margin-bottom: 0.75rem;
+        background: var(--card-bg);
+        box-shadow: var(--shadow);
+        transition: background 0.3s;
+      }
+      .accordion-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.5rem;
+        cursor: pointer;
+        user-select: none;
+      }
+      .accordion-header:hover {
+        background: rgba(37, 99, 235, 0.04);
+      }
+      .accordion-title {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 1.4rem;
+        letter-spacing: 2px;
+        color: var(--navy);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      [data-theme="dark"] .accordion-title {
+        color: var(--accent);
+      }
+      .accordion-title img {
+        width: 1.2rem;
+        height: 1.2rem;
+        opacity: 0.6;
+      }
+      [data-theme="dark"] .accordion-title img {
+        filter: brightness(0) invert(1);
+      }
+      .accordion-arrow {
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        background: var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.7rem;
+        color: var(--text-light);
+        transition:
+          transform 0.3s,
+          background 0.2s;
+        flex-shrink: 0;
+      }
+      .accordion-section.open .accordion-arrow {
+        transform: rotate(180deg);
+        background: var(--blue);
+        color: white;
+      }
+      .accordion-body {
+        display: none;
+        padding: 0 1.5rem 1.5rem;
+        border-top: 1px solid var(--border);
+      }
+      .accordion-section.open .accordion-body {
+        display: block;
+      }
+      .accordion-body .search-wrap {
+        padding-top: 1rem;
+      }
+      .hero-stats {
+        display: flex;
+        gap: 2rem;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-top: 2rem;
+      }
+      .hero-stat {
+        text-align: center;
+      }
+      .hero-stat-num {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 2rem;
+        letter-spacing: 2px;
+        color: var(--accent);
+        display: block;
+      }
+      .hero-stat-label {
+        font-size: 0.8rem;
+        color: rgba(255, 255, 255, 0.65);
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <a href="./index.html" class="logo">
+          <img src="./assets/icons/ship.png" alt="Logo" class="logo-icon" />
+          <span>yacht booking</span>
+        </a>
+        <nav id="mainNav">
+          <a href="./index.html"
+            ><img src="./assets/icons/home.png" alt="" />მთავარი</a
+          >
+          <a href="./pages/booking.html"
+            ><img src="./assets/icons/cart.png" alt="" />დაჯავშნა</a
+          >
+          <a href="./pages/gallery.html"
+            ><img src="./assets/icons/calendar-solid.png" alt="" />გალერეა</a
+          >
+          <a href="./pages/reviews.html"
+            ><img src="./assets/icons/user-solid.png" alt="" />რევიუები</a
+          >
+          <a href="./pages/cart.html"
+            ><img src="./assets/icons/cart.png" alt="" />კალათა</a
+          >
+        </nav>
+        <div class="header-actions">
+          <button id="themeToggleBtn" class="icon-btn" title="თემის შეცვლა">
+            <span id="themeIcon">🌙</span>
+          </button>
+          <div id="guestBtns">
+            <button class="btn-outline" id="openLoginBtn">
+              <img
+                src="./assets/icons/user-solid.png"
+                alt=""
+                class="btn-icon"
+              />შესვლა
+            </button>
+            <button class="btn-main" id="openRegisterBtn">რეგ.</button>
+          </div>
+          <div id="userInfo" class="hidden">
+            <span id="welcomeMsg" class="welcome-text"></span>
+            <button class="btn-outline small" id="logoutBtn">გასვლა</button>
+          </div>
+          <button class="burger" id="burgerBtn" aria-label="მენიუ">
+            <img
+              src="./assets/icons/bars-solid.png"
+              alt="menu"
+              class="burger-icon"
+            />
+          </button>
+        </div>
+      </div>
+      <div class="mobile-nav" id="mobileNav">
+        <a href="./index.html" class="mob-link"
+          ><img src="./assets/icons/home.png" alt="" />მთავარი</a
+        >
+        <a href="./pages/booking.html" class="mob-link"
+          ><img src="./assets/icons/cart.png" alt="" />დაჯავშნა</a
+        >
+        <a href="./pages/gallery.html" class="mob-link"
+          ><img src="./assets/icons/calendar-solid.png" alt="" />გალერეა</a
+        >
+        <a href="./pages/reviews.html" class="mob-link"
+          ><img src="./assets/icons/user-solid.png" alt="" />რევიუები</a
+        >
+        <a href="./pages/cart.html" class="mob-link"
+          ><img src="./assets/icons/cart.png" alt="" />კალათა</a
+        >
+        <a href="./pages/login.html" class="mob-link"
+          ><img src="./assets/icons/user-solid.png" alt="" />შესვლა</a
+        >
+      </div>
+    </header>
+
+    <!-- AUTH MODAL -->
+    <div class="modal-overlay hidden" id="authModal">
+      <div class="modal">
+        <button class="modal-close" id="closeModalBtn">
+          <img src="./assets/icons/x-solid.png" alt="close" />
+        </button>
+        <div class="modal-tabs">
+          <button class="tab-btn active" id="tabLogin">შესვლა</button>
+          <button class="tab-btn" id="tabRegister">რეგისტრაცია</button>
+        </div>
+        <!-- LOGIN FORM -->
+        <div id="loginForm" class="auth-form">
+          <h2>კეთილი იყოს შენი დაბრუნება</h2>
+          <div class="form-group">
+            <label for="login-email">ელ-ფოსტა</label>
+            <input
+              type="email"
+              id="login-email"
+              placeholder="email@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="login-password">პაროლი</label>
+            <input
+              type="password"
+              id="login-password"
+              placeholder="••••••••"
+              required
+            />
+          </div>
+          <button class="btn-main full-width" id="loginSubmitBtn">
+            შესვლა
+          </button>
+          <div id="loginMsg" class="auth-msg hidden"></div>
+        </div>
+        <!-- REGISTER FORM -->
+        <div id="registerForm" class="auth-form hidden">
+          <h2>ახალი ანგარიში</h2>
+          <div class="form-group">
+            <label for="reg-name">სახელი</label>
+            <input
+              type="text"
+              id="reg-name"
+              placeholder="გიორგი"
+              required
+              minlength="2"
+            />
+          </div>
+          <div class="form-group">
+            <label for="reg-surname">გვარი</label>
+            <input
+              type="text"
+              id="reg-surname"
+              placeholder="ბაგრატიონი"
+              required
+              minlength="2"
+            />
+          </div>
+          <div class="form-group">
+            <label for="reg-email">ელ-ფოსტა</label>
+            <input
+              type="email"
+              id="reg-email"
+              placeholder="email@example.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="reg-password">პაროლი</label>
+            <input
+              type="password"
+              id="reg-password"
+              placeholder="მინ. 6 სიმბოლო"
+              required
+              minlength="6"
+            />
+          </div>
+          <button class="btn-main full-width" id="registerSubmitBtn">
+            რეგისტრაცია
+          </button>
+          <div id="registerMsg" class="auth-msg hidden"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-content">
+        <h1>სად მიდიხარ <span class="accent">დღეს?</span></h1>
+        <p>ბილეთი ნებისმიერ მიმართულებაზე — სწრაფად და მარტივად.</p>
+        <a href="./pages/booking.html" class="btn-main">ბილეთის დაჯავშნა</a>
+        <div class="hero-stats">
+          <div class="hero-stat">
+            <span class="hero-stat-num">3</span>
+            <span class="hero-stat-label">სადგური</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">28+</span>
+            <span class="hero-stat-label">გამგზავრება კვირაში</span>
+          </div>
+          <div class="hero-stat">
+            <span class="hero-stat-num">84+</span>
+            <span class="hero-stat-label">ადგილი იახტაზე</span>
+          </div>
+        </div>
+      </div>
+      <div class="sea-track">
+        <div class="waves-bg"></div>
+        <div class="ship-anim">
+          <img src="./assets/icons/ship.png" alt="ship" class="ship-img" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ACCORDION SECTIONS -->
+    <section class="section" style="padding-top: 2rem; padding-bottom: 3rem">
+      <div class="section-inner">
+        <!-- სადგურები -->
+        <div class="accordion-section" id="acc-stations">
+          <div class="accordion-header" data-target="acc-stations">
+            <div class="accordion-title">
+              <img
+                src="./assets/icons/location-dot-solid.png"
+                alt=""
+              />სადგურები
+            </div>
+            <div class="accordion-arrow">▼</div>
+          </div>
+          <div class="accordion-body" id="stations">
+            <div class="search-wrap">
+              <input
+                type="text"
+                id="stationFilter"
+                placeholder="სადგურის სახელი..."
+                autocomplete="off"
+              />
+              <button class="btn-search" id="stationSearchBtn">
+                <img src="./assets/icons/search.png" alt="ძებნა" />
+              </button>
+              <div id="stationDropdown" class="dropdown"></div>
+            </div>
+            <div class="products stations"></div>
+          </div>
+        </div>
+
+        <!-- გამგზავრებები -->
+        <div class="accordion-section" id="acc-departures">
+          <div class="accordion-header" data-target="acc-departures">
+            <div class="accordion-title">
+              <img
+                src="./assets/icons/calendar-solid.png"
+                alt=""
+              />გამგზავრებები
+            </div>
+            <div class="accordion-arrow">▼</div>
+          </div>
+          <div class="accordion-body" id="departures">
+            <div class="search-wrap">
+              <input
+                type="text"
+                id="departureFilter"
+                placeholder="დანიშნულების ძებნა..."
+                autocomplete="off"
+              />
+              <button id="filterDepartureBtn" class="btn-search">
+                <img src="./assets/icons/search.png" alt="ძებნა" />
+              </button>
+              <div id="departureDropdown" class="dropdown"></div>
+            </div>
+            <div class="products departures"></div>
+          </div>
+        </div>
+
+        <!-- ბილეთები -->
+        <div class="accordion-section" id="acc-tickets">
+          <div class="accordion-header" data-target="acc-tickets">
+            <div class="accordion-title">
+              <img src="./assets/icons/cart.png" alt="" />ბილეთები
+            </div>
+            <div class="accordion-arrow">▼</div>
+          </div>
+          <div class="accordion-body" id="tickets">
+            <div class="search-wrap">
+              <input
+                type="text"
+                id="ticketFilter"
+                placeholder="ძებნა ელ-ფოსტით..."
+                autocomplete="off"
+              />
+              <button class="btn-search" id="ticketSearchBtn">
+                <img src="./assets/icons/search.png" alt="ძებნა" />
+              </button>
+              <div id="ticketsDropdown" class="dropdown"></div>
+            </div>
+            <div class="products tickets"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-col">
+          <div class="logo footer-logo-wrap">
+            <img
+              src="./assets/icons/ship.png"
+              alt=""
+              class="logo-icon footer-logo"
+            />
+            <span>yacht booking</span>
+          </div>
+          <p class="footer-desc">
+            სამგზავრო ბილეთები საქართველოს ყველა მიმართულებით.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">ნავიგაცია</h4>
+          <ul class="footer-links">
+            <li><a href="./index.html">მთავარი</a></li>
+            <li><a href="./pages/booking.html">დაჯავშნა</a></li>
+            <li><a href="./pages/gallery.html">გალერეა</a></li>
+            <li><a href="./pages/reviews.html">რევიუები</a></li>
+            <li><a href="./pages/cart.html">კალათა</a></li>
+            <li><a href="./pages/login.html">შესვლა</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">კონტაქტი</h4>
+          <p class="footer-contact">ბათუმი, რუსთაველის ქ. 12</p>
+          <p class="footer-contact">+995 577 00 11 22</p>
+          <p class="footer-contact">info@yachtbooking.ge</p>
+          <div class="footer-social">
+            <a href="#"
+              ><img
+                src="./assets/icons/instagram-brands-solid.png"
+                alt="instagram"
+            /></a>
+            <a href="#"
+              ><img
+                src="./assets/icons/facebook-brands-solid.png"
+                alt="facebook"
+            /></a>
+            <a href="#"><img src="./assets/icons/phone.png" alt="phone" /></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">მდებარეობა</h4>
+          <div class="footer-map">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2990.123456789!2d41.6168!3d41.6427!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4057585f2b5c7c3f%3A0x1234567890abcdef!2z4YOT4YOU4YOQ4YOb4YOj4YOX4YOk4YOQIOGDpeGDlOGDmuGDmA!5e0!3m2!1ska!2sge!4v1234567890"
+              width="100%"
+              height="160"
+              style="border: 0; border-radius: 0.5rem"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 yacht booking — შექმნილი შენი კომფორტისთვის</p>
+      </div>
+    </footer>
+
+    <script src="./scripts/app.js" type="module"></script>
+    <script>
+      // Accordion - section გახსნა/დახურვა
+      document.querySelectorAll(".accordion-header").forEach((h) => {
+        h.addEventListener("click", () => {
+          const id = h.dataset.target;
+          const sec = document.getElementById(id);
+          const wasOpen = sec.classList.contains("open");
+          document
+            .querySelectorAll(".accordion-section")
+            .forEach((s) => s.classList.remove("open"));
+          if (!wasOpen) sec.classList.add("open");
+        });
+      });
+
+      // URL hash-ით გახსნა (#stations, #departures, #tickets)
+      const hash = window.location.hash.replace("#", "");
+      if (hash) {
+        const targetMap = {
+          stations: "acc-stations",
+          departures: "acc-departures",
+          tickets: "acc-tickets",
+        };
+        const accId = targetMap[hash];
+        if (accId) {
+          const sec = document.getElementById(accId);
+          if (sec) {
+            sec.classList.add("open");
+            setTimeout(() => {
+              sec.scrollIntoView({ behavior: "smooth", block: "start" });
+            }, 150);
+          }
+        }
+      }
+    </script>
+  </body>
+</html>

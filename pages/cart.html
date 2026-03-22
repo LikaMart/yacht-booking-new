@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>კალათა | Yacht Booking</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Georgian:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="../assets/icons/ship.png" />
+    <link rel="stylesheet" href="../styles/style.css" />
+    <style>
+      .cart-page {
+        padding: 2rem 1.5rem 4rem;
+      }
+
+      .cart-page .section-inner {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+
+      /* ბილეთების ცარიელი სტეიტი */
+      .cart-empty {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: var(--text-light);
+      }
+
+      .cart-empty-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+      }
+
+      .cart-empty h3 {
+        font-size: 1.3rem;
+        margin-bottom: 0.5rem;
+        color: var(--text);
+      }
+
+      /* ბილეთების სია */
+      .tickets-list {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 2rem;
+      }
+
+      .ticket-row {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        padding: 1.25rem 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        box-shadow: var(--shadow);
+        flex-wrap: wrap;
+        transition: background 0.3s;
+      }
+
+      .ticket-route {
+        flex: 1;
+        min-width: 10rem;
+      }
+
+      .ticket-route h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        color: var(--text);
+        margin-bottom: 0.25rem;
+      }
+
+      .ticket-route p {
+        font-size: 0.85rem;
+        color: var(--text-light);
+      }
+
+      .ticket-price {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 1.5rem;
+        color: var(--accent);
+        letter-spacing: 1px;
+        white-space: nowrap;
+      }
+
+      .ticket-status {
+        padding: 0.3rem 0.75rem;
+        border-radius: 99px;
+        font-size: 0.78rem;
+        font-weight: 700;
+        white-space: nowrap;
+      }
+
+      .ticket-status.confirmed {
+        background: #d1fae5;
+        color: #065f46;
+      }
+
+      .ticket-status.pending {
+        background: #fef3c7;
+        color: #92400e;
+      }
+
+      .ticket-delete-btn {
+        background: rgba(239, 68, 68, 0.1);
+        border: 1px solid rgba(239, 68, 68, 0.3);
+        color: var(--red);
+        border-radius: 0.5rem;
+        padding: 0.4rem 0.75rem;
+        font-family: "Noto Sans Georgian", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+        white-space: nowrap;
+      }
+
+      .ticket-delete-btn:hover {
+        background: rgba(239, 68, 68, 0.2);
+      }
+
+      /* ძებნა */
+      .cart-search-wrap {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        align-items: center;
+      }
+
+      .cart-search-wrap input {
+        padding: 0.65rem 1rem;
+        border: 2px solid var(--border);
+        border-radius: 0.5rem;
+        font-family: "Noto Sans Georgian", sans-serif;
+        font-size: 0.95rem;
+        background: var(--input-bg);
+        color: var(--text);
+        outline: none;
+        flex: 1;
+        min-width: 14rem;
+        transition: border 0.2s;
+      }
+
+      .cart-search-wrap input:focus {
+        border-color: var(--blue);
+      }
+
+      .cart-summary {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        box-shadow: var(--shadow);
+      }
+
+      .cart-summary h3 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 1.4rem;
+        letter-spacing: 1px;
+        margin-bottom: 1rem;
+        color: var(--text);
+      }
+
+      .summary-row {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.9rem;
+        color: var(--text-light);
+        margin-bottom: 0.5rem;
+      }
+
+      .summary-row.total {
+        color: var(--text);
+        font-weight: 700;
+        font-size: 1.05rem;
+        border-top: 1px solid var(--border);
+        padding-top: 0.75rem;
+        margin-top: 0.5rem;
+      }
+
+      .loading-text {
+        color: var(--text-light);
+        font-size: 0.9rem;
+        padding: 1rem 0;
+      }
+
+      @media (max-width: 37.5rem) {
+        .ticket-row {
+          gap: 0.75rem;
+        }
+
+        .ticket-price {
+          font-size: 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <a href="../index.html" class="logo">
+          <img src="../assets/icons/ship.png" alt="Logo" class="logo-icon" />
+          <span>yacht booking</span>
+        </a>
+        <nav id="mainNav">
+          <a href="../index.html"
+            ><img src="../assets/icons/home.png" alt="" />მთავარი</a
+          >
+          <a href="booking.html"
+            ><img src="../assets/icons/cart.png" alt="" />დაჯავშნა</a
+          >
+          <a href="gallery.html"
+            ><img src="../assets/icons/calendar-solid.png" alt="" />გალერეა</a
+          >
+          <a href="reviews.html"
+            ><img src="../assets/icons/user-solid.png" alt="" />რევიუები</a
+          >
+
+          <a href="cart.html"
+            ><img src="../assets/icons/cart.png" alt="" />კალათა</a
+          >
+        </nav>
+        <div class="header-actions">
+          <button id="themeToggleBtn" class="icon-btn" title="თემის შეცვლა">
+            <span id="themeIcon">🌙</span>
+          </button>
+          <div id="userInfo" class="hidden">
+            <span id="welcomeMsg" class="welcome-text"></span>
+            <button class="btn-outline small" id="logoutBtn">გასვლა</button>
+          </div>
+          <div id="guestBtns">
+            <a href="login.html" class="btn-outline">
+              <img
+                src="../assets/icons/user-solid.png"
+                alt=""
+                class="btn-icon"
+              />
+              შესვლა
+            </a>
+          </div>
+          <button class="burger" id="burgerBtn" aria-label="მენიუ">
+            <img
+              src="../assets/icons/bars-solid.png"
+              alt="menu"
+              class="burger-icon"
+            />
+          </button>
+        </div>
+      </div>
+      <div class="mobile-nav" id="mobileNav">
+        <a href="../index.html" class="mob-link"
+          ><img src="../assets/icons/home.png" alt="" />მთავარი</a
+        >
+
+        <a href="booking.html" class="mob-link"
+          ><img src="../assets/icons/cart.png" alt="" />დაჯავშნა</a
+        >
+        <a href="gallery.html" class="mob-link"
+          ><img src="../assets/icons/calendar-solid.png" alt="" />გალერეა</a
+        >
+        <a href="reviews.html" class="mob-link"
+          ><img src="../assets/icons/user-solid.png" alt="" />რევიუები</a
+        >
+
+        <a href="cart.html" class="mob-link"
+          ><img src="../assets/icons/cart.png" alt="" />კალათა</a
+        >
+        <a href="login.html" class="mob-link"
+          ><img src="../assets/icons/user-solid.png" alt="" />შესვლა</a
+        >
+      </div>
+    </header>
+
+    <main class="cart-page">
+      <div class="section-inner">
+        <h1 class="page-title">ჩემი ბილეთები</h1>
+
+        <!-- ძებნა ელ-ფოსტით -->
+        <div class="cart-search-wrap">
+          <input
+            type="email"
+            id="cartEmailInput"
+            placeholder="შეიყვანეთ ელ-ფოსტა ბილეთების სანახავად..."
+          />
+          <button class="btn-main" id="cartSearchBtn">ძებნა</button>
+        </div>
+
+        <!-- ბილეთების სია -->
+        <div id="ticketsList" class="tickets-list">
+          <p class="loading-text">შეიყვანეთ ელ-ფოსტა ბილეთების სანახავად</p>
+        </div>
+
+        <!-- შეჯამება -->
+        <div class="cart-summary" id="cartSummary" style="display: none">
+          <h3>შეჯამება</h3>
+          <div class="summary-row">
+            <span>ბილეთების რაოდენობა</span>
+            <span id="ticketCount">0</span>
+          </div>
+          <div class="summary-row total">
+            <span>სულ</span>
+            <span id="ticketTotal">0 ₾</span>
+          </div>
+          <a
+            href="booking.html"
+            class="btn-main"
+            style="margin-top: 1rem; display: inline-flex"
+          >
+            ახალი ბილეთის დამატება
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-col">
+          <div class="logo footer-logo-wrap">
+            <img
+              src="../assets/icons/ship.png"
+              alt=""
+              class="logo-icon footer-logo"
+            />
+            <span>yacht booking</span>
+          </div>
+          <p class="footer-desc">
+            სამგზავრო ბილეთები საქართველოს ყველა მიმართულებით.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">ნავიგაცია</h4>
+          <ul class="footer-links">
+            <li><a href="../index.html">მთავარი</a></li>
+            <li><a href="booking.html">დაჯავშნა</a></li>
+            <li><a href="cart.html">კალათა</a></li>
+            <li><a href="gallery.html">გალერეა</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">კონტაქტი</h4>
+          <p class="footer-contact">ბათუმი, რუსთაველის ქ. 12</p>
+          <p class="footer-contact">+995 577 00 11 22</p>
+          <p class="footer-contact">
+            <a href="/cdn-cgi/l/email-protection#dcb5b2bab39ca5bdbfb4a8beb3b3b7b5b2bbf2bbb9" class="__cf_email__" data-cfemail="1b72757d745b627a78736f7974747072757c357c7e">[email&#160;protected]</a
+            >
+          </p>
+          <div class="footer-social">
+            <a href="#"
+              ><img
+                src="../assets/icons/instagram-brands-solid.png"
+                alt="instagram"
+            /></a>
+            <a href="#"
+              ><img
+                src="../assets/icons/facebook-brands-solid.png"
+                alt="facebook"
+            /></a>
+            <a href="#"><img src="../assets/icons/phone.png" alt="phone" /></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">მდებარეობა</h4>
+          <div class="footer-map">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2990.123456789!2d41.6168!3d41.6427!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4057585f2b5c7c3f%3A0x1234567890abcdef!2z4YOT4YOU4YOQ4YOb4YOj4YOX4YOk4YOQIOGDpeGDlOGDmuGDmA!5e0!3m2!1ska!2sge!4v1234567890"
+              width="100%"
+              height="160"
+              style="border: 0; border-radius: 0.5rem"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 yacht booking — შექმნილი შენი კომფორტისთვის</p>
+      </div>
+    </footer>
+
+    
+    <script src="../scripts/theme.js" type="module"></script>
+    <script>
+      const BASE_URL = "https://railway.stepprojects.ge/api";
+
+      // ბილეთების ძებნა ელ-ფოსტით - GET /api/tickets
+      document
+        .getElementById("cartSearchBtn")
+        .addEventListener("click", async () => {
+          const email = document.getElementById("cartEmailInput").value.trim();
+          const list = document.getElementById("ticketsList");
+          const summary = document.getElementById("cartSummary");
+
+          // ელ-ფოსტის ვალიდაცია
+          if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            list.innerHTML =
+              '<p class="loading-text" style="color:var(--red)">შეიყვანეთ სწორი ელ-ფოსტა</p>';
+            summary.style.display = "none";
+            return;
+          }
+
+          list.innerHTML = '<p class="loading-text">იტვირთება...</p>';
+          summary.style.display = "none";
+
+          try {
+            const resp = await fetch(`${BASE_URL}/tickets`);
+            const data = await resp.json();
+
+            // ელ-ფოსტით ფილტრი
+            const filtered = data.filter((t) => t.email === email);
+
+            if (!filtered.length) {
+              list.innerHTML = `
+              <div class="cart-empty">
+                <div class="cart-empty-icon">🎫</div>
+                <h3>ბილეთი ვერ მოიძებნა</h3>
+                <p>${email}-ზე ბილეთი არ არის. <a href="booking.html" style="color:var(--blue)">დაჯავშნეთ ახლავე</a></p>
+              </div>`;
+              return;
+            }
+
+            // ბილეთების ჩვენება
+            list.innerHTML = "";
+            let total = 0;
+
+            filtered.forEach((ticket) => {
+              total += ticket.ticketPrice || 0;
+
+              const row = document.createElement("div");
+              row.classList.add("ticket-row");
+              row.innerHTML = `
+              <div class="ticket-route">
+                <h4>${ticket.train ? `${ticket.train.from} → ${ticket.train.to}` : "მარშრუტი"}</h4>
+                <p>${ticket.train ? `${ticket.train.name} | ${ticket.train.departure}` : ""} | ${ticket.date || ""}</p>
+              </div>
+              <div class="ticket-price">${ticket.ticketPrice || 0} ₾</div>
+              <span class="ticket-status ${ticket.confirmed ? "confirmed" : "pending"}">
+                ${ticket.confirmed ? "დადასტ." : "მოლოდინში"}
+              </span>
+              <button class="ticket-delete-btn" data-id="${ticket.id}">გაუქმება</button>
+            `;
+
+              // DELETE - ბილეთის გაუქმება UUID-ით
+              // ticketId = UUID ფორმატი (ticket.id)
+              row
+                .querySelector(".ticket-delete-btn")
+                .addEventListener("click", async (e) => {
+                  const ticketId = e.target.dataset.id;
+                  if (!confirm("ბილეთი გაუქმდება. გრძელდება?")) return;
+
+                  try {
+                    const delResp = await fetch(
+                      `${BASE_URL}/tickets/cancel/${ticketId}`,
+                      {
+                        method: "DELETE",
+                      },
+                    );
+
+                    if (delResp.ok) {
+                      row.style.opacity = "0.4";
+                      row.style.pointerEvents = "none";
+                      e.target.textContent = "გაუქმდა";
+                    } else {
+                      const txt = await delResp.text();
+                      alert(`შეცდომა: ${txt}`);
+                    }
+                  } catch (err) {
+                    alert(`კავშირის შეცდომა: ${err.message}`);
+                  }
+                });
+
+              list.appendChild(row);
+            });
+
+            // შეჯამება
+            document.getElementById("ticketCount").textContent =
+              filtered.length;
+            document.getElementById("ticketTotal").textContent = `${total} ₾`;
+            summary.style.display = "block";
+          } catch (err) {
+            list.innerHTML = `<p class="loading-text" style="color:var(--red)">შეცდომა: ${err.message}</p>`;
+          }
+        });
+
+      // Enter-ით ძებნა
+      document
+        .getElementById("cartEmailInput")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter")
+            

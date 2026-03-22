@@ -1,0 +1,934 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>დაჯავშნა | Yacht Booking</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+Georgian:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="icon" type="image/png" href="../assets/icons/ship.png" />
+    <link rel="stylesheet" href="../styles/style.css" />
+    <style>
+      /* ==============================
+         Booking layout - 2 სვეტი
+         ============================== */
+      .booking-layout {
+        display: grid;
+        grid-template-columns: 1fr 22rem;
+        gap: 1.5rem;
+        align-items: start;
+      }
+
+      .booking-main {
+        min-width: 0;
+      }
+
+      /* 
+         Step სათაური
+          */
+      .step-label {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+      }
+
+      .step-num {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background: var(--navy);
+        color: white;
+        font-weight: 700;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+
+      .step-label h3 {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--text);
+        margin: 0;
+      }
+
+      /* 
+         იახტის ბარათი (არჩეული)
+          */
+      .selected-train-card {
+        background: linear-gradient(135deg, var(--navy) 0%, #2d3e6e 100%);
+        border-radius: 0.75rem;
+        padding: 1.25rem 1.5rem;
+        color: white;
+        display: none;
+        margin-bottom: 1rem;
+      }
+
+      .selected-train-card.show {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      .train-badge {
+        background: rgba(255, 255, 255, 0.15);
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 1.4rem;
+        letter-spacing: 2px;
+        color: var(--accent);
+        white-space: nowrap;
+      }
+
+      .train-route-info {
+        flex: 1;
+      }
+      .train-route-info h4 {
+        font-size: 1rem;
+        font-weight: 700;
+        margin-bottom: 0.25rem;
+      }
+      .train-route-info p {
+        font-size: 0.82rem;
+        opacity: 0.75;
+      }
+
+      .train-times {
+        display: flex;
+        gap: 1.5rem;
+        text-align: center;
+      }
+
+      .train-time-col span {
+        display: block;
+      }
+      .train-time-col .t-time {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
+      }
+      .train-time-col .t-city {
+        font-size: 0.78rem;
+        opacity: 0.7;
+      }
+
+      .train-arrow {
+        font-size: 1.2rem;
+        opacity: 0.5;
+        align-self: center;
+      }
+
+      /* 
+         /* გემბანის სქემა (modal) ფანჯარა */
+      .seat-modal-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 300;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        backdrop-filter: blur(4px);
+      }
+
+      .seat-modal-overlay.hidden {
+        display: none;
+      }
+
+      .seat-modal {
+        background: var(--card-bg);
+        border-radius: 1rem;
+        padding: 1.5rem;
+        width: 100%;
+        max-width: 26rem;
+        max-height: 90vh;
+        overflow-y: auto;
+        position: relative;
+      }
+
+      .seat-modal-title {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 1.4rem;
+        letter-spacing: 1px;
+        color: var(--navy);
+        margin-bottom: 0.25rem;
+      }
+
+      [data-theme="dark"] .seat-modal-title {
+        color: var(--accent);
+      }
+
+      .seat-modal-sub {
+        font-size: 0.82rem;
+        color: var(--text-light);
+        margin-bottom: 1.25rem;
+      }
+
+      /* გემბანი სქემა */
+      .vagon-shell {
+        background: var(--bg);
+        border-radius: 0.75rem;
+        padding: 1rem;
+        border: 1px solid var(--border);
+      }
+
+      .vagon-toilet {
+        text-align: center;
+        font-size: 0.72rem;
+        color: var(--text-light);
+        background: var(--border);
+        border-radius: 0.35rem;
+        padding: 0.3rem;
+        margin-bottom: 0.75rem;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+      }
+
+      /* ადგილების ბადე - 4 სვეტი + დერეფანი */
+      .seat-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 0.4fr 1fr 1fr;
+        gap: 0.35rem;
+        margin-bottom: 0.5rem;
+      }
+
+      /* ადგილის ღილაკი */
+      .seat-btn {
+        aspect-ratio: 1;
+        border-radius: 0.35rem;
+        border: 2px solid;
+        font-size: 0.68rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.15s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Noto Sans Georgian", sans-serif;
+      }
+
+      .seat-btn.free {
+        background: #dcfce7;
+        border-color: #86efac;
+        color: #166534;
+      }
+
+      .seat-btn.free:hover {
+        background: #bbf7d0;
+        transform: scale(1.08);
+      }
+
+      .seat-btn.occupied {
+        background: #fee2e2;
+        border-color: #fca5a5;
+        color: #991b1b;
+        cursor: not-allowed;
+      }
+
+      .seat-btn.selected {
+        background: var(--blue);
+        border-color: var(--blue-dark);
+        color: white;
+        transform: scale(1.08);
+      }
+
+      /* ლეგენდა */
+      .seat-legend {
+        display: flex;
+        gap: 1rem;
+        margin-top: 0.75rem;
+        flex-wrap: wrap;
+      }
+
+      .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        font-size: 0.78rem;
+        color: var(--text-light);
+      }
+
+      .legend-dot {
+        width: 0.85rem;
+        height: 0.85rem;
+        border-radius: 0.2rem;
+        flex-shrink: 0;
+      }
+
+      .seat-modal-actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.25rem;
+      }
+
+      .seat-modal-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: none;
+        border: 1px solid var(--border);
+        border-radius: 0.4rem;
+        width: 2rem;
+        height: 2rem;
+        cursor: pointer;
+        color: var(--text-light);
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background 0.15s;
+      }
+
+      .seat-modal-close:hover {
+        background: var(--border);
+      }
+
+      /* 
+         მგზავრების ფორმა
+          */
+      .passenger-row {
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        padding: 1.25rem;
+        margin-bottom: 0.75rem;
+        transition: background 0.3s;
+      }
+
+      .passenger-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+      }
+
+      .passenger-label {
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: var(--text);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .passenger-seat-badge {
+        background: var(--blue);
+        color: white;
+        font-size: 0.75rem;
+        font-weight: 700;
+        padding: 0.2rem 0.6rem;
+        border-radius: 99px;
+      }
+
+      .passenger-seat-badge.empty {
+        background: var(--border);
+        color: var(--text-light);
+      }
+
+      .passenger-fields {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 0.75rem;
+      }
+
+      /* 
+         ინვოისი (sidebar)
+          */
+      .invoice-card {
+        background: var(--card-bg);
+        border: 1px solid var(--border);
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 5rem;
+        transition: background 0.3s;
+      }
+
+      .invoice-header {
+        background: linear-gradient(135deg, var(--navy) 0%, #2d3e6e 100%);
+        padding: 1.25rem 1.5rem;
+        color: white;
+      }
+
+      .invoice-header h3 {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 1.4rem;
+        letter-spacing: 2px;
+        margin-bottom: 0.1rem;
+      }
+
+      .invoice-header p {
+        font-size: 0.8rem;
+        opacity: 0.7;
+      }
+
+      .invoice-body {
+        padding: 1.25rem 1.5rem;
+      }
+
+      .invoice-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.6rem 0;
+        border-bottom: 1px solid var(--border);
+        font-size: 0.88rem;
+      }
+
+      .invoice-row:last-child {
+        border-bottom: none;
+      }
+
+      .invoice-row .seat-code {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 1rem;
+        color: var(--navy);
+        letter-spacing: 1px;
+      }
+
+      [data-theme="dark"] .invoice-row .seat-code {
+        color: var(--accent);
+      }
+
+      .invoice-row .price {
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      .invoice-empty {
+        text-align: center;
+        color: var(--text-light);
+        font-size: 0.85rem;
+        padding: 1.5rem 0;
+      }
+
+      .invoice-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 1.5rem;
+        background: var(--bg);
+        border-top: 2px solid var(--border);
+      }
+
+      .invoice-total span:first-child {
+        font-size: 0.82rem;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 700;
+      }
+
+      .invoice-total .total-price {
+        font-family: "Bebas Neue", sans-serif;
+        font-size: 1.8rem;
+        color: var(--accent);
+        letter-spacing: 1px;
+      }
+
+      .invoice-submit {
+        padding: 1rem 1.5rem;
+      }
+
+      /* 
+         ადგილის არჩეული indicator
+   */
+      .choose-seat-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: rgba(37, 99, 235, 0.08);
+        border: 2px dashed var(--blue);
+        color: var(--blue);
+        border-radius: 0.5rem;
+        padding: 0.5rem 1rem;
+        font-family: "Noto Sans Georgian", sans-serif;
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.15s;
+      }
+
+      .choose-seat-btn:hover {
+        background: rgba(37, 99, 235, 0.14);
+      }
+
+      /*
+         Confirm / Delete სექცია
+      */
+      .action-cards {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-top: 1rem;
+      }
+
+      /* 
+         Responsive
+          */
+      @media (max-width: 68rem) {
+        .booking-layout {
+          grid-template-columns: 1fr;
+        }
+
+        .invoice-card {
+          position: static;
+          order: -1;
+        }
+      }
+
+      @media (max-width: 37.5rem) {
+        .passenger-fields {
+          grid-template-columns: 1fr;
+        }
+
+        .action-cards {
+          grid-template-columns: 1fr;
+        }
+
+        .train-times {
+          gap: 0.75rem;
+        }
+        .train-time-col .t-time {
+          font-size: 1.2rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header>
+      <div class="header-inner">
+        <a href="../index.html" class="logo">
+          <img src="../assets/icons/ship.png" alt="Logo" class="logo-icon" />
+          <span>yacht booking</span>
+        </a>
+        <nav id="mainNav">
+          <a href="../index.html"
+            ><img src="../assets/icons/home.png" alt="" />მთავარი</a
+          >
+          <a href="booking.html"
+            ><img src="../assets/icons/cart.png" alt="" />დაჯავშნა</a
+          >
+          <a href="gallery.html"
+            ><img src="../assets/icons/calendar-solid.png" alt="" />გალერეა</a
+          >
+          <a href="reviews.html"
+            ><img src="../assets/icons/user-solid.png" alt="" />რევიუები</a
+          >
+
+          <a href="cart.html"
+            ><img src="../assets/icons/cart.png" alt="" />კალათა</a
+          >
+        </nav>
+        <div class="header-actions">
+          <button id="themeToggleBtn" class="icon-btn" title="თემის შეცვლა">
+            <span id="themeIcon">🌙</span>
+          </button>
+          <div id="userInfo" class="hidden">
+            <span id="welcomeMsg" class="welcome-text"></span>
+            <button class="btn-outline small" id="logoutBtn">გასვლა</button>
+          </div>
+          <div id="guestBtns">
+            <a href="login.html" class="btn-outline">
+              <img
+                src="../assets/icons/user-solid.png"
+                alt=""
+                class="btn-icon"
+              />
+              შესვლა
+            </a>
+          </div>
+          <button class="burger" id="burgerBtn" aria-label="მენიუ">
+            <img
+              src="../assets/icons/bars-solid.png"
+              alt="menu"
+              class="burger-icon"
+            />
+          </button>
+        </div>
+      </div>
+      <div class="mobile-nav" id="mobileNav">
+        <a href="../index.html" class="mob-link"
+          ><img src="../assets/icons/home.png" alt="" />მთავარი</a
+        >
+        <a href="booking.html" class="mob-link"
+          ><img src="../assets/icons/cart.png" alt="" />დაჯავშნა</a
+        >
+        <a href="gallery.html" class="mob-link"
+          ><img src="../assets/icons/calendar-solid.png" alt="" />გალერეა</a
+        >
+        <a href="reviews.html" class="mob-link"
+          ><img src="../assets/icons/user-solid.png" alt="" />რევიუები</a
+        >
+
+        <a href="cart.html" class="mob-link"
+          ><img src="../assets/icons/cart.png" alt="" />კალათა</a
+        >
+        <a href="login.html" class="mob-link"
+          ><img src="../assets/icons/user-solid.png" alt="" />შესვლა</a
+        >
+      </div>
+    </header>
+
+    <!-- ადგილის არჩევის ცხრილი -->
+    <div class="seat-modal-overlay hidden" id="seatModalOverlay">
+      <div class="seat-modal">
+        <button class="seat-modal-close" id="seatModalClose">✕</button>
+        <p class="seat-modal-title" id="seatModalTitle">გემბანი</p>
+        <p class="seat-modal-sub">მწვანე — თავისუფალი | წითელი — დაკავებული</p>
+        <div id="seatMapContainer"></div>
+        <div class="seat-legend">
+          <div class="legend-item">
+            <div
+              class="legend-dot"
+              style="background: #dcfce7; border: 2px solid #86efac"
+            ></div>
+            <span>თავისუფალი</span>
+          </div>
+          <div class="legend-item">
+            <div
+              class="legend-dot"
+              style="background: #fee2e2; border: 2px solid #fca5a5"
+            ></div>
+            <span>დაკავებული</span>
+          </div>
+          <div class="legend-item">
+            <div
+              class="legend-dot"
+              style="
+                background: var(--blue);
+                border: 2px solid var(--blue-dark);
+              "
+            ></div>
+            <span>არჩეული</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <main class="booking-page">
+      <div class="section-inner">
+        <h1 class="page-title">ბილეთის დაჯავშნა</h1>
+
+        <div class="booking-layout">
+          <!--  მარცხენა სვეტი  -->
+          <div class="booking-main">
+            <!-- STEP 1: საკონტაქტო ინფო -->
+            <div class="form-card" style="margin-bottom: 1.25rem">
+              <div class="step-label">
+                <div class="step-num">1</div>
+                <h3>საკონტაქტო ინფორმაცია</h3>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label
+                    >ელ-ფოსტა <span style="color: var(--red)">*</span></label
+                  >
+                  <input
+                    type="email"
+                    id="f-email"
+                    placeholder="email@example.com"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label
+                    >ტელეფონი <span style="color: var(--red)">*</span></label
+                  >
+                  <input
+                    type="text"
+                    id="f-phone"
+                    placeholder="+995 5XX XXX XXX"
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 2: იახტის არჩევა -->
+            <div class="form-card" style="margin-bottom: 1.25rem">
+              <div class="step-label">
+                <div class="step-num">2</div>
+                <h3>იახტის არჩევა</h3>
+              </div>
+
+              <!-- არჩეული იახტა - ჩნდება არჩევის შემდეგ -->
+              <div class="selected-train-card" id="selectedTrainCard">
+                <div class="train-badge" id="trainBadge">#---</div>
+                <div class="train-route-info">
+                  <h4 id="trainName">—</h4>
+                  <p id="trainDate">—</p>
+                </div>
+                <div class="train-times">
+                  <div class="train-time-col">
+                    <span class="t-time" id="trainDep">--:--</span>
+                    <span class="t-city" id="trainFrom">—</span>
+                  </div>
+                  <div class="train-arrow">→</div>
+                  <div class="train-time-col">
+                    <span class="t-time" id="trainArr">--:--</span>
+                    <span class="t-city" id="trainTo">—</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="form-group">
+                  <label>იახტა</label>
+                  <select id="f-trainId">
+                    <option value="">აირჩიე იახტა...</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label>გემბანი</label>
+                  <select id="f-vagonId" disabled>
+                    <option value="">ჯერ იახტა აირჩიე</option>
+                  </select>
+                </div>
+                <div class="form-group" style="position: relative">
+                  <label>გამგზავრების თარიღი</label>
+                  <input
+                    type="text"
+                    id="f-date"
+                    placeholder="აირჩიე თარიღი..."
+                    readonly
+                    style="cursor: pointer"
+                  />
+                  <div id="calendarWrap" class="calendar-wrap"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- STEP 3: მგზავრები და ადგილები -->
+            <div class="form-card" style="margin-bottom: 1.25rem">
+              <div class="step-label">
+                <div class="step-num">3</div>
+                <h3>მგზავრის ინფორმაცია</h3>
+              </div>
+
+              <!-- მგზავრების სია - JS ავსებს ამას -->
+              <div id="passengersContainer">
+                <!-- default: ერთი მგზავრი -->
+                <div class="passenger-row" data-passenger="0">
+                  <div class="passenger-header">
+                    <div class="passenger-label">
+                      <span>მგზავრი 1</span>
+                      <span class="passenger-seat-badge empty" id="badge-0"
+                        >ადგილი არ არჩეულა</span
+                      >
+                    </div>
+                    <button
+                      class="choose-seat-btn"
+                      data-passenger="0"
+                      id="chooseSeat-0"
+                      disabled
+                    >
+                      ადგილის არჩევა
+                    </button>
+                  </div>
+                  <div class="passenger-fields">
+                    <div class="form-group">
+                      <label
+                        >სახელი <span style="color: var(--red)">*</span></label
+                      >
+                      <input
+                        type="text"
+                        id="p-name-0"
+                        placeholder="გიორგი"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label
+                        >გვარი <span style="color: var(--red)">*</span></label
+                      >
+                      <input
+                        type="text"
+                        id="p-surname-0"
+                        placeholder="ბაგრატიონი"
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label>პირადი ნომერი</label>
+                      <input
+                        type="text"
+                        id="p-id-0"
+                        placeholder="01234567890"
+                        maxlength="11"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- მგზავრის დამატება -->
+              <button
+                class="btn-secondary"
+                id="addPassengerBtn"
+                style="margin-top: 0.5rem"
+                disabled
+              >
+                + მგზავრის დამატება
+              </button>
+            </div>
+
+            <!-- STEP 4: Confirm / Delete -->
+            <div class="action-cards">
+              <div class="form-card">
+                <div class="step-label" style="margin-bottom: 0.75rem">
+                  <div
+                    class="step-num"
+                    style="background: var(--accent); color: var(--navy)"
+                  >
+                    ✓
+                  </div>
+                  <h3>ბილეთის დადასტურება</h3>
+                </div>
+                <div class="form-group" style="margin-bottom: 0.75rem">
+                  <label>ბილეთის ID</label>
+                  <input type="text" id="u-id" placeholder="UUID..." />
+                </div>
+                <button id="putTicketBtn" class="btn-secondary">
+                  <img
+                    src="../assets/icons/gear-solid.png"
+                    alt=""
+                    class="btn-icon"
+                  />
+                  დადასტურება
+                </button>
+                <div id="updateMsg" class="auth-msg hidden"></div>
+              </div>
+
+              <div class="form-card">
+                <div class="step-label" style="margin-bottom: 0.75rem">
+                  <div class="step-num" style="background: var(--red)">✕</div>
+                  <h3>ბილეთის გაუქმება</h3>
+                </div>
+                <div class="form-group" style="margin-bottom: 0.75rem">
+                  <label>ბილეთის ID</label>
+                  <input type="text" id="d-id" placeholder="UUID..." />
+                </div>
+                <button id="deleteTicketBtn" class="btn-danger">
+                  <img
+                    src="../assets/icons/x-solid.png"
+                    alt=""
+                    class="btn-icon"
+                  />
+                  გაუქმება
+                </button>
+                <div id="deleteMsg" class="auth-msg hidden"></div>
+              </div>
+            </div>
+          </div>
+          <!-- /booking-main -->
+
+          <!--ინვოისი (sidebar)  -->
+          <div>
+            <div class="invoice-card">
+              <div class="invoice-header">
+                <h3>ინვოისი</h3>
+                <p>არჩეული ადგილები და ფასები</p>
+              </div>
+              <div class="invoice-body" id="invoiceBody">
+                <div class="invoice-empty" id="invoiceEmpty">
+                  ადგილი ჯერ არ არჩეულა
+                </div>
+              </div>
+              <div class="invoice-total">
+                <span>სულ</span>
+                <span class="total-price" id="invoiceTotal">0 ₾</span>
+              </div>
+              <div class="invoice-submit">
+                <button id="postTicketBtn" class="btn-main full-width">
+                  <img src="../assets/icons/cart.png" alt="" class="btn-icon" />
+                  ბილეთის დაჯავშნა
+                </button>
+                <div
+                  id="bookingMsg"
+                  class="auth-msg hidden"
+                  style="margin-top: 0.75rem"
+                ></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- /booking-layout -->
+      </div>
+    </main>
+
+    <footer>
+      <div class="footer-inner">
+        <div class="footer-col">
+          <div class="logo footer-logo-wrap">
+            <img
+              src="../assets/icons/ship.png"
+              alt=""
+              class="logo-icon footer-logo"
+            />
+            <span>yacht booking</span>
+          </div>
+          <p class="footer-desc">
+            სამგზავრო ბილეთები საქართველოს ყველა მიმართულებით.
+          </p>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">ნავიგაცია</h4>
+          <ul class="footer-links">
+            <li><a href="../index.html">მთავარი</a></li>
+            <li><a href="booking.html">დაჯავშნა</a></li>
+            <li><a href="gallery.html">გალერეა</a></li>
+            <li><a href="reviews.html">რევიუები</a></li>
+            <li><a href="login.html">შესვლა</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">კონტაქტი</h4>
+          <p class="footer-contact">ბათუმი, რუსთაველის ქ. 12</p>
+          <p class="footer-contact">+995 577 00 11 22</p>
+          <p class="footer-contact">info@yachtbooking.ge</p>
+          <div class="footer-social">
+            <a href="#"
+              ><img
+                src="../assets/icons/instagram-brands-solid.png"
+                alt="instagram"
+            /></a>
+            <a href="#"
+              ><img
+                src="../assets/icons/facebook-brands-solid.png"
+                alt="facebook"
+            /></a>
+            <a href="#"><img src="../assets/icons/phone.png" alt="phone" /></a>
+          </div>
+        </div>
+        <div class="footer-col">
+          <h4 class="footer-heading">მდებარეობა</h4>
+          <div class="footer-map">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2990.123456789!2d41.6168!3d41.6427!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4057585f2b5c7c3f%3A0x1234567890abcdef!2z4YOT4YOU4YOQ4YOb4YOj4YOX4YOk4YOQIOGDpeGDlOGDmuGDmA!5e0!3m2!1ska!2sge!4v1234567890"
+              width="100%"
+              height="160"
+              style="border: 0; border-radius: 0.5rem"
+              allowfullscreen=""
+              loading="lazy"
+              referrerpolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© 2026 yacht booking — შექმნილი შენი კომფორტისთვის</p>
+      </div>
+    </footer>
+    <script src="../scripts/booking.js" type="module"></script>
+  </body>
+</html>

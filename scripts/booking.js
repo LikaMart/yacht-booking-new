@@ -64,10 +64,11 @@ document.getElementById("f-trainId").addEventListener("change", async () => {
   state.selectedTrain = null;
   document.getElementById("selectedTrainCard").classList.remove("show");
 
-  // "ადგილის არჩევა" ღილაკები disable
+  // "ადგილის არჩევა" ღილაკები და მგზავრის დამატება — disable
   document
     .querySelectorAll(".choose-seat-btn")
     .forEach((b) => (b.disabled = true));
+  document.getElementById("addPassengerBtn").disabled = true;
 
   if (!trainId) return;
 
@@ -111,14 +112,15 @@ document.getElementById("f-vagonId").addEventListener("change", async () => {
   document
     .querySelectorAll(".choose-seat-btn")
     .forEach((b) => (b.disabled = true));
+  document.getElementById("addPassengerBtn").disabled = true;
 
   if (!vagonId) return;
 
-  // მხოლოდ ID ვინახავთ - fresh fetch გამოხსნაზე ხდება openSeatMap()-ში
   state.currentVagonId = vagonId;
   document
     .querySelectorAll(".choose-seat-btn")
     .forEach((b) => (b.disabled = false));
+  document.getElementById("addPassengerBtn").disabled = false;
 });
 
 // ============================================================
@@ -248,7 +250,8 @@ async function openSeatMap() {
   if (!state.currentVagonId) return;
 
   // ყოველ გახსნაზე სახელმძღვ. fresh data - "already occupied" error-ის თავიდან ასაცილებლად
-  seatContainer.innerHTML = '<p style="padding:2rem;text-align:center;color:var(--text-light)">⏳ იტვირთება...</p>';
+  seatContainer.innerHTML =
+    '<p style="padding:2rem;text-align:center;color:var(--text-light)">⏳ იტვირთება...</p>';
   seatOverlay.classList.remove("hidden");
 
   try {
@@ -359,7 +362,7 @@ function addPassengerRow(idx) {
         <span class="passenger-seat-badge empty" id="badge-${idx}">ადგილი არ არჩეულა</span>
       </div>
       <button class="choose-seat-btn" data-passenger="${idx}" id="chooseSeat-${idx}"
-        ${state.currentVagon ? "" : "disabled"}>
+        ${state.currentVagonId ? "" : "disabled"}>
         ადგილის არჩევა
       </button>
     </div>
@@ -476,9 +479,74 @@ document.getElementById("postTicketBtn").addEventListener("click", async () => {
     });
 
     const text = await resp.text();
+    console.log("📦 register raw response:", text);
 
     if (resp.ok) {
-      showMsg(msgEl, "ბილეთი წარმატებით დაჯავშნა!", "success");
+      const UUID_RE =
+        /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+      let ticketUUID = "";
+
+      // 1. პირდაპირ UUID ვეძებთ პასუხში
+      try {
+        const parsed = JSON.parse(text);
+        console.log("📦 register parsed:", parsed);
+        const candidate = String(
+          parsed.id || parsed.ticketId || parsed.uuid || parsed,
+        )
+          .replace(/^"|"$/g, "")
+          .trim();
+        if (UUID_RE.test(candidate)) ticketUUID = candidate;
+      } catch {}
+
+      if (!ticketUUID) {
+        const m = text.match(UUID_RE);
+        if (m) ticketUUID = m[0];
+      }
+
+      // 2. UUID ვერ ვიპოვეთ პასუხში → GET /tickets-ით ვეძებთ ელ-ფოსტით
+      if (!ticketUUID) {
+        try {
+          console.log("🔍 UUID not in response, searching by email...");
+          const listResp = await fetch(`${BASE_URL}/tickets`);
+          const tickets = await listResp.json();
+          // ბოლო დაჯავშნილი ბილეთი ამ ელ-ფოსტაზე
+          const match = tickets
+            .filter((t) => t.email === email)
+            .sort((a, b) => b.numericId - a.numericId || 0)
+            .at(-1); // ყველაზე ბოლო
+          if (match) {
+            const candidate = String(match.id).replace(/^"|"$/g, "").trim();
+            if (UUID_RE.test(candidate)) {
+              ticketUUID = candidate;
+              console.log("✅ UUID found via GET /tickets:", ticketUUID);
+            }
+          }
+        } catch (e) {
+          console.warn("GET /tickets failed:", e);
+        }
+      }
+
+      console.log("✅ final ticketUUID:", ticketUUID);
+
+      const uId = document.getElementById("u-id");
+      const dId = document.getElementById("d-id");
+
+      if (ticketUUID) {
+        showMsg(msgEl, `ბილეთი დაჯავშნა! ID ავტომატურად ჩაიწერა.`, "success");
+        if (uId) uId.value = ticketUUID;
+        if (dId) dId.value = ticketUUID;
+      } else {
+        // integer id მაინც ვაჩვენებთ
+        const intMatch = text.match(/\d+/);
+        const fallback = intMatch ? intMatch[0] : text.trim().substring(0, 60);
+        showMsg(
+          msgEl,
+          `ბილეთი დაჯავშნა! სერვერის პასუხი: ${fallback}`,
+          "success",
+        );
+        if (uId) uId.value = fallback;
+        if (dId) dId.value = fallback;
+      }
     } else {
       showMsg(msgEl, text || `შეცდომა (${resp.status})`, "error");
     }
@@ -488,11 +556,93 @@ document.getElementById("postTicketBtn").addEventListener("click", async () => {
 });
 
 // ============================================================
+// UUID LOOKUP - ელ-ფოსტით ბილეთის UUID-ის მოძიება
+// ============================================================
+document.getElementById("lookupUUIDBtn").addEventListener("click", async () => {
+  const msgEl = document.getElementById("lookupMsg");
+  const emailVal = document.getElementById("lookup-email").value.trim();
+  if (!emailVal) {
+    showMsg(msgEl, "ელ-ფოსტა შეიყვანეთ", "error");
+    return;
+  }
+
+  msgEl.textContent = "⏳ ეძებს...";
+  msgEl.className = "auth-msg";
+  msgEl.style.display = "block";
+
+  try {
+    const resp = await fetch(`${BASE_URL}/tickets`);
+    const tickets = await resp.json();
+    const UUID_RE =
+      /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i;
+
+    // ამ ელ-ფოსტის ყველა ბილეთი
+    const mine = tickets.filter((t) => t.email === emailVal);
+
+    if (!mine.length) {
+      showMsg(msgEl, `${emailVal}-ზე ბილეთი ვერ მოიძებნა`, "error");
+      return;
+    }
+
+    // UUID-ის მქონე ბილეთები
+    const withUUID = mine.filter((t) =>
+      UUID_RE.test(String(t.id).replace(/^"|"$/g, "")),
+    );
+
+    if (!withUUID.length) {
+      showMsg(
+        msgEl,
+        `ბილეთი მოიძებნა, მაგრამ UUID ვერ ამოვიღეთ. console-ში ნახე.`,
+        "error",
+      );
+      console.log("tickets found:", mine);
+      return;
+    }
+
+    // ყველაზე ბოლო ბილეთი
+    const latest = withUUID[withUUID.length - 1];
+    const uuid = String(latest.id).replace(/^"|"$/g, "").trim();
+
+    document.getElementById("u-id").value = uuid;
+    document.getElementById("d-id").value = uuid;
+
+    // თუ რამდენიმე ბილეთია — dropdown
+    if (withUUID.length === 1) {
+      showMsg(
+        msgEl,
+        `✅ UUID ჩაიწერა (${latest.confirmed ? "დადასტ." : "მოლოდინში"})`,
+        "success",
+      );
+    } else {
+      // select ვაჩვენოთ
+      let selectHTML = `<select id="uuidSelect" style="width:100%;margin-top:0.35rem;padding:0.4rem;border-radius:0.4rem;border:1px solid var(--border);background:var(--card-bg);color:var(--text);font-size:0.8rem;">`;
+      withUUID.forEach((t) => {
+        const u = String(t.id).replace(/^"|"$/g, "");
+        selectHTML += `<option value="${u}">${u.substring(0, 8)}... | ${t.confirmed ? "✅" : "⏳"} | ${t.date || ""}</option>`;
+      });
+      selectHTML += `</select>`;
+      msgEl.innerHTML =
+        `✅ ${withUUID.length} ბილეთი მოიძებნა — აირჩიე:` + selectHTML;
+      msgEl.className = "auth-msg success";
+      msgEl.style.display = "block";
+
+      document.getElementById("uuidSelect").addEventListener("change", (e) => {
+        document.getElementById("u-id").value = e.target.value;
+        document.getElementById("d-id").value = e.target.value;
+      });
+    }
+  } catch (err) {
+    showMsg(msgEl, `შეცდომა: ${err.message}`, "error");
+  }
+});
+
+// ============================================================
 // 9. CONFIRM - GET /api/tickets/confirm/{id}
 // ============================================================
 document.getElementById("putTicketBtn").addEventListener("click", async () => {
   const msgEl = document.getElementById("updateMsg");
-  const id = document.getElementById("u-id").value.trim();
+  const rawId = document.getElementById("u-id").value.trim();
+  const id = rawId.replace(/^"|"$/g, "").trim();
   if (!id) {
     showMsg(msgEl, "ბილეთის ID შეიყვანეთ", "error");
     return;
@@ -519,7 +669,8 @@ document
   .getElementById("deleteTicketBtn")
   .addEventListener("click", async () => {
     const msgEl = document.getElementById("deleteMsg");
-    const id = document.getElementById("d-id").value.trim();
+    const rawId = document.getElementById("d-id").value.trim();
+    const id = rawId.replace(/^"|"$/g, "").trim();
     if (!id) {
       showMsg(msgEl, "ბილეთის ID შეიყვანეთ", "error");
       return;

@@ -64,7 +64,9 @@
         justify-content: center;
         font-size: 0.7rem;
         color: var(--text-light);
-        transition: transform 0.3s, background 0.2s;
+        transition:
+          transform 0.3s,
+          background 0.2s;
         flex-shrink: 0;
       }
       .accordion-section.open .accordion-arrow {
@@ -137,7 +139,11 @@
           <div class="header-auth">
             <div id="guestBtns">
               <button class="btn-outline" id="openLoginBtn">
-                <img src="./assets/icons/user-solid.png" alt="" class="btn-icon" />შესვლა
+                <img
+                  src="./assets/icons/user-solid.png"
+                  alt=""
+                  class="btn-icon"
+                />შესვლა
               </button>
               <button class="btn-main" id="openRegisterBtn">რეგ.</button>
             </div>
@@ -147,25 +153,47 @@
             </div>
           </div>
           <button class="burger" id="burgerBtn" aria-label="მენიუ">
-            <img src="./assets/icons/bars-solid.png" alt="menu" class="burger-icon" />
+            <img
+              src="./assets/icons/bars-solid.png"
+              alt="menu"
+              class="burger-icon"
+            />
           </button>
         </div>
       </div>
       <div class="mobile-nav" id="mobileNav">
-        <a href="./index.html" class="mob-link"><img src="./assets/icons/home.png" alt="" />მთავარი</a>
-        <a href="./pages/booking.html" class="mob-link"><img src="./assets/icons/cart.png" alt="" />დაჯავშნა</a>
-        <a href="./pages/gallery.html" class="mob-link"><img src="./assets/icons/calendar-solid.png" alt="" />გალერეა</a>
-        <a href="./pages/reviews.html" class="mob-link"><img src="./assets/icons/user-solid.png" alt="" />რევიუები</a>
-        <a href="./pages/cart.html" class="mob-link"><img src="./assets/icons/cart.png" alt="" />კალათა</a>
-        <a href="./pages/login.html" class="mob-link"><img src="./assets/icons/user-solid.png" alt="" />შესვლა</a>
+        <a href="./index.html" class="mob-link"
+          ><img src="./assets/icons/home.png" alt="" />მთავარი</a
+        >
+        <a href="./pages/booking.html" class="mob-link"
+          ><img src="./assets/icons/cart.png" alt="" />დაჯავშნა</a
+        >
+        <a href="./pages/gallery.html" class="mob-link"
+          ><img src="./assets/icons/calendar-solid.png" alt="" />გალერეა</a
+        >
+        <a href="./pages/reviews.html" class="mob-link"
+          ><img src="./assets/icons/user-solid.png" alt="" />რევიუები</a
+        >
+        <a href="./pages/cart.html" class="mob-link"
+          ><img src="./assets/icons/cart.png" alt="" />კალათა</a
+        >
+        <a href="./pages/login.html" class="mob-link"
+          ><img src="./assets/icons/user-solid.png" alt="" />შესვლა</a
+        >
         <!-- Auth ღილაკები mobile menu-ში -->
         <div class="mob-auth" id="mobGuestBtns">
-          <button class="btn-outline mob-auth-btn" id="openLoginBtn2">შესვლა</button>
-          <button class="btn-main mob-auth-btn" id="openRegisterBtn2">რეგისტრაცია</button>
+          <button class="btn-outline mob-auth-btn" id="openLoginBtn2">
+            შესვლა
+          </button>
+          <button class="btn-main mob-auth-btn" id="openRegisterBtn2">
+            რეგისტრაცია
+          </button>
         </div>
         <div class="mob-auth hidden" id="mobUserInfo">
           <span class="mob-welcome" id="mobWelcomeMsg"></span>
-          <button class="btn-danger mob-auth-btn" id="mobLogoutBtn">გასვლა</button>
+          <button class="btn-danger mob-auth-btn" id="mobLogoutBtn">
+            გასვლა
+          </button>
         </div>
       </div>
     </header>
@@ -288,12 +316,14 @@
     <!-- ACCORDION SECTIONS -->
     <section class="section" style="padding-top: 2rem; padding-bottom: 3rem">
       <div class="section-inner">
-
         <!-- სადგურები -->
         <div class="accordion-section" id="acc-stations">
           <div class="accordion-header" data-target="acc-stations">
             <div class="accordion-title">
-              <img src="./assets/icons/location-dot-solid.png" alt="" />სადგურები
+              <img
+                src="./assets/icons/location-dot-solid.png"
+                alt=""
+              />სადგურები
             </div>
             <div class="accordion-arrow">▼</div>
           </div>
@@ -318,7 +348,10 @@
         <div class="accordion-section" id="acc-departures">
           <div class="accordion-header" data-target="acc-departures">
             <div class="accordion-title">
-              <img src="./assets/icons/calendar-solid.png" alt="" />გამგზავრებები
+              <img
+                src="./assets/icons/calendar-solid.png"
+                alt=""
+              />გამგზავრებები
             </div>
             <div class="accordion-arrow">▼</div>
           </div>
@@ -363,7 +396,6 @@
             <div class="products tickets"></div>
           </div>
         </div>
-
       </div>
     </section>
 
@@ -398,7 +430,14 @@
           <h4 class="footer-heading">კონტაქტი</h4>
           <p class="footer-contact">ბათუმი, რუსთაველის ქ. 12</p>
           <p class="footer-contact">+995 577 00 11 22</p>
-          <p class="footer-contact"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="caa3a4aca58ab3aba9a2bea8a5a5a1a3a4ade4adaf">[email&#160;protected]</a></p>
+          <p class="footer-contact">
+            <a
+              href="/cdn-cgi/l/email-protection"
+              class="__cf_email__"
+              data-cfemail="caa3a4aca58ab3aba9a2bea8a5a5a1a3a4ade4adaf"
+              >[email&#160;protected]</a
+            >
+          </p>
           <div class="footer-social">
             <a href="#"
               ><img
@@ -410,9 +449,7 @@
                 src="./assets/icons/facebook-brands-solid.png"
                 alt="facebook"
             /></a>
-            <a href="#"
-              ><img src="./assets/icons/phone.png" alt="phone"
-            /></a>
+            <a href="#"><img src="./assets/icons/phone.png" alt="phone" /></a>
           </div>
         </div>
         <div class="footer-col">
@@ -435,7 +472,11 @@
       </div>
     </footer>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="./scripts/app.js" type="module"></script>
+    <script
+      data-cfasync="false"
+      src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
+    ></script>
+    <script src="./scripts/app.js" type="module"></script>
     <script>
       // Accordion - section გახსნა/დახურვა
       document.querySelectorAll(".accordion-header").forEach((h) => {

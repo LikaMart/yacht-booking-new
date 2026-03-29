@@ -102,6 +102,26 @@
         color: #92400e;
       }
 
+      .ticket-confirm-btn {
+        background: #059669;
+        color: white;
+        border: none;
+        border-radius: 0.4rem;
+        padding: 0.4rem 0.75rem;
+        font-size: 0.8rem;
+        cursor: pointer;
+        font-family: inherit;
+        transition: opacity 0.2s;
+        white-space: nowrap;
+      }
+      .ticket-confirm-btn:hover:not(:disabled) {
+        opacity: 0.85;
+      }
+      .ticket-confirm-btn:disabled {
+        opacity: 0.45;
+        cursor: default;
+      }
+
       .ticket-delete-btn {
         background: rgba(239, 68, 68, 0.1);
         border: 1px solid rgba(239, 68, 68, 0.3);
@@ -343,7 +363,11 @@
           <p class="footer-contact">ბათუმი, რუსთაველის ქ. 12</p>
           <p class="footer-contact">+995 577 00 11 22</p>
           <p class="footer-contact">
-            <a href="/cdn-cgi/l/email-protection#dcb5b2bab39ca5bdbfb4a8beb3b3b7b5b2bbf2bbb9" class="__cf_email__" data-cfemail="1b72757d745b627a78736f7974747072757c357c7e">[email&#160;protected]</a
+            <a
+              href="/cdn-cgi/l/email-protection#dcb5b2bab39ca5bdbfb4a8beb3b3b7b5b2bbf2bbb9"
+              class="__cf_email__"
+              data-cfemail="1b72757d745b627a78736f7974747072757c357c7e"
+              >[email&#160;protected]</a
             >
           </p>
           <div class="footer-social">
@@ -380,7 +404,6 @@
       </div>
     </footer>
 
-    
     <script src="../scripts/theme.js" type="module"></script>
     <script>
       const BASE_URL = "https://railway.stepprojects.ge/api";
@@ -428,6 +451,9 @@
             filtered.forEach((ticket) => {
               total += ticket.ticketPrice || 0;
 
+              // UUID quotes-ისგან გასუფთავება
+              const tUUID = String(ticket.id).replace(/^"|"$/g, "").trim();
+
               const row = document.createElement("div");
               row.classList.add("ticket-row");
               row.innerHTML = `
@@ -436,38 +462,62 @@
                 <p>${ticket.train ? `${ticket.train.name} | ${ticket.train.departure}` : ""} | ${ticket.date || ""}</p>
               </div>
               <div class="ticket-price">${ticket.ticketPrice || 0} ₾</div>
-              <span class="ticket-status ${ticket.confirmed ? "confirmed" : "pending"}">
-                ${ticket.confirmed ? "დადასტ." : "მოლოდინში"}
+              <span class="ticket-status ${ticket.confirmed ? "confirmed" : "pending"}" id="status-${tUUID}">
+                ${ticket.confirmed ? "✅ დადასტ." : "⏳ მოლოდინში"}
               </span>
-              <button class="ticket-delete-btn" data-id="${ticket.id}">გაუქმება</button>
+              <div style="display:flex;gap:0.4rem;align-items:center;flex-wrap:wrap;">
+                <button class="ticket-confirm-btn" data-id="${tUUID}" ${ticket.confirmed ? "disabled" : ""}>✅ დადასტ.</button>
+                <button class="ticket-delete-btn" data-id="${tUUID}">🗑 გაუქმება</button>
+              </div>
             `;
 
-              // DELETE - ბილეთის გაუქმება UUID-ით
-              // ticketId = UUID ფორმატი (ticket.id)
+              // CONFIRM
+              row
+                .querySelector(".ticket-confirm-btn")
+                .addEventListener("click", async (e) => {
+                  const uuid = e.target.dataset.id.replace(/^"|"$/g, "").trim();
+                  try {
+                    const confResp = await fetch(
+                      `${BASE_URL}/tickets/confirm/${uuid}`,
+                    );
+                    if (confResp.ok) {
+                      e.target.disabled = true;
+                      e.target.style.opacity = "0.5";
+                      const statusEl = document.getElementById(
+                        `status-${uuid}`,
+                      );
+                      if (statusEl) {
+                        statusEl.textContent = "✅ დადასტ.";
+                        statusEl.className = "ticket-status confirmed";
+                      }
+                    } else {
+                      alert("შეცდომა: " + (await confResp.text()));
+                    }
+                  } catch (err) {
+                    alert("კავშირის შეცდომა: " + err.message);
+                  }
+                });
+
+              // DELETE
               row
                 .querySelector(".ticket-delete-btn")
                 .addEventListener("click", async (e) => {
-                  const ticketId = e.target.dataset.id;
+                  const uuid = e.target.dataset.id.replace(/^"|"$/g, "").trim();
                   if (!confirm("ბილეთი გაუქმდება. გრძელდება?")) return;
-
                   try {
                     const delResp = await fetch(
-                      `${BASE_URL}/tickets/cancel/${ticketId}`,
-                      {
-                        method: "DELETE",
-                      },
+                      `${BASE_URL}/tickets/cancel/${uuid}`,
+                      { method: "DELETE" },
                     );
-
                     if (delResp.ok) {
                       row.style.opacity = "0.4";
                       row.style.pointerEvents = "none";
-                      e.target.textContent = "გაუქმდა";
+                      e.target.textContent = "✓ გაუქმდა";
                     } else {
-                      const txt = await delResp.text();
-                      alert(`შეცდომა: ${txt}`);
+                      alert("შეცდომა: " + (await delResp.text()));
                     }
                   } catch (err) {
-                    alert(`კავშირის შეცდომა: ${err.message}`);
+                    alert("კავშირის შეცდომა: " + err.message);
                   }
                 });
 
@@ -489,4 +539,8 @@
         .getElementById("cartEmailInput")
         .addEventListener("keydown", (e) => {
           if (e.key === "Enter")
-            
+            document.getElementById("cartSearchBtn").click();
+        });
+    </script>
+  </body>
+</html>

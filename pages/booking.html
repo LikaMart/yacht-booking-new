@@ -794,9 +794,49 @@
                   </div>
                   <h3>ბილეთის დადასტურება</h3>
                 </div>
+                <!-- UUID ძებნა ელ-ფოსტით -->
+                <div class="form-group" style="margin-bottom: 0.5rem">
+                  <label>UUID ელ-ფოსტით ძებნა</label>
+                  <div style="display: flex; gap: 0.5rem">
+                    <input
+                      type="email"
+                      id="lookup-email"
+                      placeholder="email@example.com"
+                      style="flex: 1"
+                    />
+                    <button
+                      id="lookupUUIDBtn"
+                      class="btn-secondary"
+                      style="white-space: nowrap; padding: 0 0.85rem"
+                    >
+                      🔍 ძებნა
+                    </button>
+                  </div>
+                  <div
+                    id="lookupMsg"
+                    class="auth-msg hidden"
+                    style="margin-top: 0.35rem"
+                  ></div>
+                </div>
+
                 <div class="form-group" style="margin-bottom: 0.75rem">
-                  <label>ბილეთის ID</label>
-                  <input type="text" id="u-id" placeholder="UUID..." />
+                  <label
+                    >ბილეთის UUID
+                    <span
+                      style="
+                        color: var(--text-light);
+                        font-weight: 400;
+                        font-size: 0.78rem;
+                      "
+                      >(ავტომატურად ივსება)</span
+                    ></label
+                  >
+                  <input
+                    type="text"
+                    id="u-id"
+                    placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    style="font-size: 0.78rem"
+                  />
                 </div>
                 <button id="putTicketBtn" class="btn-secondary">
                   <img
@@ -815,8 +855,23 @@
                   <h3>ბილეთის გაუქმება</h3>
                 </div>
                 <div class="form-group" style="margin-bottom: 0.75rem">
-                  <label>ბილეთის ID</label>
-                  <input type="text" id="d-id" placeholder="UUID..." />
+                  <label
+                    >ბილეთის UUID
+                    <span
+                      style="
+                        color: var(--text-light);
+                        font-weight: 400;
+                        font-size: 0.78rem;
+                      "
+                      >(ზემოდან ავტომატურად ივსება)</span
+                    ></label
+                  >
+                  <input
+                    type="text"
+                    id="d-id"
+                    placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
+                    style="font-size: 0.78rem"
+                  />
                 </div>
                 <button id="deleteTicketBtn" class="btn-danger">
                   <img
@@ -895,7 +950,14 @@
           <h4 class="footer-heading">კონტაქტი</h4>
           <p class="footer-contact">ბათუმი, რუსთაველის ქ. 12</p>
           <p class="footer-contact">+995 577 00 11 22</p>
-          <p class="footer-contact">info@yachtbooking.ge</p>
+          <p class="footer-contact">
+            <a
+              href="/cdn-cgi/l/email-protection"
+              class="__cf_email__"
+              data-cfemail="a2cbccc4cde2dbc3c1cad6c0cdcdc9cbccc58cc5c7"
+              >[email&#160;protected]</a
+            >
+          </p>
           <div class="footer-social">
             <a href="#"
               ><img
@@ -929,6 +991,7 @@
         <p>© 2026 yacht booking — შექმნილი შენი კომფორტისთვის</p>
       </div>
     </footer>
+
     <script src="../scripts/booking.js" type="module"></script>
   </body>
 </html>

@@ -450,10 +450,14 @@ function showTickets(list) {
   }
 
   list.forEach((ticket) => {
+    // UUID შეიძლება quotes-ში მოვიდეს API-დან — ვასუფთავებთ
+    const ticketUUID = String(ticket.id).replace(/^"|"$/g, "").trim();
+
     const card = document.createElement("div");
     card.classList.add("card");
+    card.style.position = "relative";
     card.innerHTML = `
-      <h3>ბილეთი #${ticket.id}</h3>
+      <h3>ბილეთი #${ticketUUID}</h3>
       <p>${ticket.ticketPrice} ₾ | ${ticket.date} | ${
         ticket.confirmed ? "✅ დადასტ." : "⏳ მოლოდინი"
       }</p>
@@ -471,6 +475,31 @@ function showTickets(list) {
       pp.textContent = `👤 ${person.name || "—"} ${person.surname || ""} | ადგ: ${person.seat?.number} | ${person.seat?.price} ₾`;
       card.appendChild(pp);
     });
+
+    // Delete ღილაკი
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "🗑 გაუქმება";
+    delBtn.style.cssText =
+      "margin-top:0.5rem;padding:0.35rem 0.75rem;background:var(--red,#ef4444);color:#fff;border:none;border-radius:0.4rem;cursor:pointer;font-size:0.8rem;font-family:inherit;";
+    delBtn.addEventListener("click", async () => {
+      if (!confirm(`ბილეთი #${ticketUUID} გაუქმდება. გრძელდება?`)) return;
+      try {
+        const r = await fetch(`${BASE_URL}/tickets/cancel/${ticketUUID}`, {
+          method: "DELETE",
+        });
+        if (r.ok) {
+          card.style.opacity = "0.4";
+          card.style.pointerEvents = "none";
+          delBtn.textContent = "✓ გაუქმდა";
+        } else {
+          const errText = await r.text();
+          alert("შეცდომა: " + errText);
+        }
+      } catch (err) {
+        alert("კავშირის შეცდომა: " + err.message);
+      }
+    });
+    card.appendChild(delBtn);
 
     div.appendChild(card);
   });
